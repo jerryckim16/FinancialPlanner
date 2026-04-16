@@ -59,6 +59,10 @@
       grid-template-columns: 1fr;
     }
 
+    .field-group.three {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+
     label {
       display: block;
       font-size: 12px;
@@ -83,6 +87,31 @@
       border-color: #0071e3;
       box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.15);
     }
+
+    .inline-summary {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 14px;
+      background: #f5f5f7;
+      border-radius: 8px;
+      margin-top: 12px;
+      font-size: 13px;
+    }
+
+    .inline-summary .label-text {
+      color: #86868b;
+      font-weight: 500;
+    }
+
+    .inline-summary .value-text {
+      font-family: "SF Mono", "Fira Code", monospace;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .inline-summary.positive .value-text { color: #0a8a2a; }
+    .inline-summary.negative .value-text { color: #d70015; }
 
     .results {
       display: grid;
@@ -193,8 +222,24 @@
     .legend .leg-principal::before { background: #0071e3; }
     .legend .leg-interest::before { background: #34c759; }
 
+    .note {
+      font-size: 11px;
+      color: #86868b;
+      margin-top: 8px;
+    }
+
+    .warning-banner {
+      background: #fff4e5;
+      border: 1px solid #ffcc80;
+      color: #995c00;
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-top: 12px;
+      font-size: 13px;
+    }
+
     @media (max-width: 500px) {
-      .field-group { grid-template-columns: 1fr; }
+      .field-group, .field-group.three { grid-template-columns: 1fr; }
       .results { grid-template-columns: 1fr; }
     }
   </style>
@@ -205,20 +250,89 @@
   </header>
 
   <div class="container">
-    <!-- Inputs -->
+    <!-- Job Income -->
     <div class="card">
-      <h2>Compound Interest Calculator</h2>
+      <h2>Job Income</h2>
       <div class="field-group">
+        <div>
+          <label for="annualIncome">Annual Gross Income ($)</label>
+          <input type="number" id="annualIncome" value="75000" min="0" step="1000" />
+        </div>
+        <div>
+          <label for="taxRate">Effective Tax Rate (%)</label>
+          <input type="number" id="taxRate" value="22" min="0" max="60" step="0.5" />
+        </div>
+      </div>
+      <div class="inline-summary">
+        <span class="label-text">Monthly Take-Home</span>
+        <span class="value-text" id="monthlyTakeHome">--</span>
+      </div>
+      <div class="note">Tax rate should include federal + state + FICA (~22% is typical for middle income).</div>
+    </div>
+
+    <!-- Monthly Costs -->
+    <div class="card">
+      <h2>Monthly Costs</h2>
+      <div class="field-group">
+        <div>
+          <label for="rent">Rent / Mortgage ($)</label>
+          <input type="number" id="rent" value="1500" min="0" step="50" />
+        </div>
+        <div>
+          <label for="food">Food ($)</label>
+          <input type="number" id="food" value="500" min="0" step="25" />
+        </div>
+      </div>
+      <div class="field-group">
+        <div>
+          <label for="carPayment">Car Payment ($)</label>
+          <input type="number" id="carPayment" value="300" min="0" step="25" />
+        </div>
+        <div>
+          <label for="carInsurance">Car Insurance ($)</label>
+          <input type="number" id="carInsurance" value="120" min="0" step="10" />
+        </div>
+      </div>
+      <div class="field-group three">
+        <div>
+          <label for="phone">Phone ($)</label>
+          <input type="number" id="phone" value="60" min="0" step="5" />
+        </div>
+        <div>
+          <label for="utilities">Utilities ($)</label>
+          <input type="number" id="utilities" value="150" min="0" step="10" />
+        </div>
+        <div>
+          <label for="misc">Other ($)</label>
+          <input type="number" id="misc" value="100" min="0" step="10" />
+        </div>
+      </div>
+      <div class="inline-summary">
+        <span class="label-text">Total Monthly Costs</span>
+        <span class="value-text" id="totalCosts">--</span>
+      </div>
+    </div>
+
+    <!-- Monthly Savings Summary -->
+    <div class="card">
+      <h2>Savings Capacity</h2>
+      <div class="inline-summary" id="savingsSummary">
+        <span class="label-text">Monthly Savings (Take-Home − Costs)</span>
+        <span class="value-text" id="monthlySavings">--</span>
+      </div>
+      <div class="warning-banner" id="savingsWarning" style="display:none;">
+        Your monthly costs exceed your take-home income. Reduce expenses or increase income to grow savings.
+      </div>
+    </div>
+
+    <!-- Investment Settings -->
+    <div class="card">
+      <h2>Investment Settings</h2>
+      <div class="field-group three">
         <div>
           <label for="principal">Initial Investment ($)</label>
           <input type="number" id="principal" value="10000" min="0" step="100" />
         </div>
-        <div>
-          <label for="monthly">Monthly Contribution ($)</label>
-          <input type="number" id="monthly" value="500" min="0" step="50" />
-        </div>
-      </div>
-      <div class="field-group">
         <div>
           <label for="rate">Annual Return Rate (%)</label>
           <input type="number" id="rate" value="7" min="-50" max="100" step="0.5" />
@@ -267,27 +381,66 @@
 
   <script>
     function formatUSD(n) {
-      return "$" + Math.round(n).toLocaleString("en-US");
+      var prefix = n < 0 ? "-$" : "$";
+      return prefix + Math.abs(Math.round(n)).toLocaleString("en-US");
+    }
+
+    function num(id) {
+      return parseFloat(document.getElementById(id).value) || 0;
     }
 
     function calculate() {
-      var principal = parseFloat(document.getElementById("principal").value) || 0;
-      var monthly = parseFloat(document.getElementById("monthly").value) || 0;
-      var annualRate = parseFloat(document.getElementById("rate").value) || 0;
-      var years = parseInt(document.getElementById("years").value) || 1;
+      // --- Income ---
+      var annualIncome = num("annualIncome");
+      var taxRate = num("taxRate") / 100;
+      var monthlyTakeHome = (annualIncome * (1 - taxRate)) / 12;
+      document.getElementById("monthlyTakeHome").textContent = formatUSD(monthlyTakeHome);
+
+      // --- Costs ---
+      var totalCosts =
+        num("rent") +
+        num("food") +
+        num("carPayment") +
+        num("carInsurance") +
+        num("phone") +
+        num("utilities") +
+        num("misc");
+      document.getElementById("totalCosts").textContent = formatUSD(totalCosts);
+
+      // --- Savings ---
+      var monthlySavings = monthlyTakeHome - totalCosts;
+      document.getElementById("monthlySavings").textContent = formatUSD(monthlySavings);
+
+      var savingsSummary = document.getElementById("savingsSummary");
+      var warning = document.getElementById("savingsWarning");
+      savingsSummary.classList.remove("positive", "negative");
+      if (monthlySavings >= 0) {
+        savingsSummary.classList.add("positive");
+        warning.style.display = "none";
+      } else {
+        savingsSummary.classList.add("negative");
+        warning.style.display = "block";
+      }
+
+      // --- Investment projection ---
+      var principal = num("principal");
+      var annualRate = num("rate");
+      var years = Math.max(1, parseInt(document.getElementById("years").value) || 1);
+
+      // Clamp monthly contribution to >= 0 for projection purposes
+      var monthlyContribution = Math.max(0, monthlySavings);
 
       var monthlyRate = annualRate / 100 / 12;
       var months = years * 12;
 
-      // Build year-by-year data
       var data = [];
       var balance = principal;
       var totalContributed = principal;
 
       for (var y = 1; y <= years; y++) {
         for (var m = 0; m < 12; m++) {
-          balance = balance * (1 + monthlyRate) + monthly;
-          totalContributed += monthly;
+          balance = balance * (1 + monthlyRate) + monthlyContribution;
+          totalContributed += monthlyContribution;
         }
         data.push({
           year: y,
@@ -302,7 +455,6 @@
       var totalInterest = last.interest;
       var totalContrib = last.contributed;
 
-      // Update summary
       document.getElementById("totalValue").textContent = formatUSD(totalValue);
       document.getElementById("totalInterest").textContent = formatUSD(totalInterest);
       document.getElementById("totalContrib").textContent = formatUSD(totalContrib);
@@ -311,15 +463,14 @@
           ? Math.round((totalInterest / totalContrib) * 100) + "% return on contributions"
           : "";
 
-      // Effective monthly growth
-      if (months > 0 && principal > 0) {
+      if (months > 0 && principal > 0 && totalValue > 0) {
         var effectiveMonthly = (Math.pow(totalValue / principal, 1 / months) - 1) * 100;
         document.getElementById("monthlyGrowth").textContent = effectiveMonthly.toFixed(3) + "%";
       } else {
         document.getElementById("monthlyGrowth").textContent = "--";
       }
 
-      // Render bar chart — show every year if <= 15, otherwise sample
+      // --- Bar chart ---
       var maxVal = totalValue;
       var chart = document.getElementById("barChart");
       chart.innerHTML = "";
@@ -348,12 +499,10 @@
       }
     }
 
-    // Recalculate on any input change
     document.querySelectorAll("input").forEach(function (el) {
       el.addEventListener("input", calculate);
     });
 
-    // Initial calculation
     calculate();
   </script>
 </body>
