@@ -1,7 +1,7 @@
 # FinancialPlanner
 
-financial planning calculator that calculates how much money you save over time
-Prototype is 
+Financial planning calculator that calculates how much money you save over time
+Prototype is simply
 Savings, investment rate, time 
 
 Costs
@@ -26,7 +26,5 @@ Factors
 can adjust rate of change for each category for select period of time
 can be very precise e.g Job income can increase and peak at age 50 and start tapering down
 
-you can click a circle to adjust values and see how your networth changes over time
-
-
-adjust predicted costs and investment returns and 
+you can click a circle to adjust values for each factor in various precise ways and see how your networth changes over time
+adjust predicted costs and investment returns to your liking
