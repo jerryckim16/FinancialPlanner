@@ -21,9 +21,9 @@ export default function NetWorthChart({ data }: Props) {
   const allNegative = data.every((d) => d.netWorth <= 0);
 
   return (
-    <div className="card p-4">
+    <div className="card p-4" style={{ minWidth: 0 }}>
       <h3 className="label mb-3">Net Worth Over Time</h3>
-      <ResponsiveContainer width="100%" height={320}>
+      <ResponsiveContainer width="100%" height={320} minWidth={200}>
         <AreaChart data={data} margin={{ top: 4, right: 8, bottom: 0, left: 8 }}>
           <defs>
             <linearGradient id="netWorthGrad" x1="0" y1="0" x2="0" y2="1">
