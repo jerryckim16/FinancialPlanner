@@ -48,6 +48,15 @@
       margin-bottom: 16px;
     }
 
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .card-header h2 { margin-bottom: 0; }
+
     .field-group {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -55,13 +64,8 @@
       margin-bottom: 16px;
     }
 
-    .field-group.full {
-      grid-template-columns: 1fr;
-    }
-
-    .field-group.three {
-      grid-template-columns: 1fr 1fr 1fr;
-    }
+    .field-group.full { grid-template-columns: 1fr; }
+    .field-group.three { grid-template-columns: 1fr 1fr 1fr; }
 
     label {
       display: block;
@@ -82,10 +86,81 @@
       transition: border-color 0.15s;
     }
 
+    input[type="text"] {
+      font-family: inherit;
+    }
+
     input:focus {
       outline: none;
       border-color: #0071e3;
       box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.15);
+    }
+
+    button {
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      padding: 7px 14px;
+      transition: all 0.15s;
+    }
+
+    .btn-primary {
+      background: #0071e3;
+      color: #fff;
+    }
+    .btn-primary:hover { background: #005bb5; }
+
+    .btn-ghost {
+      background: transparent;
+      color: #86868b;
+      border-color: transparent;
+      padding: 4px 8px;
+      font-size: 12px;
+    }
+    .btn-ghost:hover { color: #d70015; }
+
+    .loan-row {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 0.8fr 1fr auto;
+      gap: 10px;
+      align-items: end;
+      padding: 12px;
+      background: #fafafa;
+      border: 1px solid #e0e0e0;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+
+    .loan-row input { background: #fff; }
+
+    .loan-meta {
+      grid-column: 1 / -1;
+      font-size: 11px;
+      color: #86868b;
+      font-family: "SF Mono", "Fira Code", monospace;
+      padding-top: 6px;
+      border-top: 1px dashed #e0e0e0;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .loan-meta span {
+      white-space: nowrap;
+    }
+
+    .loan-meta .warn {
+      color: #d70015;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 20px;
+      color: #86868b;
+      font-size: 13px;
     }
 
     .inline-summary {
@@ -151,9 +226,7 @@
       margin-top: 2px;
     }
 
-    .bar-chart {
-      margin-top: 8px;
-    }
+    .bar-chart { margin-top: 8px; }
 
     .bar-row {
       display: flex;
@@ -180,17 +253,9 @@
       display: flex;
     }
 
-    .bar-principal {
-      background: #0071e3;
-      height: 100%;
-      transition: width 0.3s;
-    }
-
-    .bar-interest {
-      background: #34c759;
-      height: 100%;
-      transition: width 0.3s;
-    }
+    .bar-principal { background: #0071e3; height: 100%; transition: width 0.3s; }
+    .bar-interest { background: #34c759; height: 100%; transition: width 0.3s; }
+    .bar-debt { background: #ff3b30; height: 100%; transition: width 0.3s; }
 
     .bar-amount {
       width: 90px;
@@ -207,6 +272,7 @@
       margin-bottom: 12px;
       font-size: 12px;
       color: #86868b;
+      flex-wrap: wrap;
     }
 
     .legend span::before {
@@ -221,6 +287,7 @@
 
     .legend .leg-principal::before { background: #0071e3; }
     .legend .leg-interest::before { background: #34c759; }
+    .legend .leg-debt::before { background: #ff3b30; }
 
     .note {
       font-size: 11px;
@@ -241,6 +308,7 @@
     @media (max-width: 500px) {
       .field-group, .field-group.three { grid-template-columns: 1fr; }
       .results { grid-template-columns: 1fr; }
+      .loan-row { grid-template-columns: 1fr 1fr; }
     }
   </style>
 </head>
@@ -313,15 +381,33 @@
       </div>
     </div>
 
+    <!-- Loans -->
+    <div class="card">
+      <div class="card-header">
+        <h2>Loans &amp; Debt</h2>
+        <button class="btn-primary" id="addLoanBtn">+ Add Loan</button>
+      </div>
+      <div id="loansList"></div>
+      <div class="inline-summary">
+        <span class="label-text">Total Debt Balance</span>
+        <span class="value-text" id="totalDebt">$0</span>
+      </div>
+      <div class="inline-summary">
+        <span class="label-text">Total Monthly Loan Payments</span>
+        <span class="value-text" id="totalLoanPayments">$0</span>
+      </div>
+      <div class="note">Payments continue until each loan is fully paid off. Once paid, that payment flows into your investments.</div>
+    </div>
+
     <!-- Monthly Savings Summary -->
     <div class="card">
       <h2>Savings Capacity</h2>
       <div class="inline-summary" id="savingsSummary">
-        <span class="label-text">Monthly Savings (Take-Home − Costs)</span>
+        <span class="label-text">Monthly Savings (Take-Home − Costs − Loan Payments)</span>
         <span class="value-text" id="monthlySavings">--</span>
       </div>
       <div class="warning-banner" id="savingsWarning" style="display:none;">
-        Your monthly costs exceed your take-home income. Reduce expenses or increase income to grow savings.
+        Your monthly obligations exceed your take-home income. Reduce expenses, restructure loans, or increase income.
       </div>
     </div>
 
@@ -362,8 +448,9 @@
           <div class="stat-value" id="totalContrib">--</div>
         </div>
         <div class="stat-card">
-          <div class="stat-label">Effective Monthly Growth</div>
-          <div class="stat-value" id="monthlyGrowth">--</div>
+          <div class="stat-label">Debt-Free In</div>
+          <div class="stat-value" id="debtFree">--</div>
+          <div class="stat-sub" id="debtInterestPaid"></div>
         </div>
       </div>
     </div>
@@ -374,13 +461,22 @@
       <div class="legend">
         <span class="leg-principal">Contributions</span>
         <span class="leg-interest">Interest</span>
+        <span class="leg-debt">Remaining Debt</span>
       </div>
       <div class="bar-chart" id="barChart"></div>
     </div>
   </div>
 
   <script>
+    // ---------- State: loans are held in a simple array ----------
+    var loans = [
+      { name: "Student Loan", balance: 25000, rate: 5.5, payment: 280 }
+    ];
+    var loanIdCounter = 0;
+
+    // ---------- Helpers ----------
     function formatUSD(n) {
+      if (!isFinite(n)) return "--";
       var prefix = n < 0 ? "-$" : "$";
       return prefix + Math.abs(Math.round(n)).toLocaleString("en-US");
     }
@@ -389,28 +485,172 @@
       return parseFloat(document.getElementById(id).value) || 0;
     }
 
+    function formatMonths(m) {
+      if (m === null || !isFinite(m)) return "Never";
+      if (m <= 0) return "Now";
+      var years = Math.floor(m / 12);
+      var months = m % 12;
+      if (years === 0) return months + "mo";
+      if (months === 0) return years + "y";
+      return years + "y " + months + "mo";
+    }
+
+    // ---------- Loan list rendering ----------
+    function renderLoans() {
+      var container = document.getElementById("loansList");
+      container.innerHTML = "";
+
+      if (loans.length === 0) {
+        var empty = document.createElement("div");
+        empty.className = "empty-state";
+        empty.textContent = "No loans — click 'Add Loan' to include debt in your plan.";
+        container.appendChild(empty);
+        return;
+      }
+
+      loans.forEach(function (loan, idx) {
+        var row = document.createElement("div");
+        row.className = "loan-row";
+
+        // Compute loan metadata for display
+        var meta = simulateLoan(loan.balance, loan.rate, loan.payment);
+
+        row.innerHTML =
+          '<div>' +
+            '<label>Name</label>' +
+            '<input type="text" data-idx="' + idx + '" data-field="name" value="' + escapeHtml(loan.name) + '" placeholder="e.g. Student Loan" />' +
+          '</div>' +
+          '<div>' +
+            '<label>Balance ($)</label>' +
+            '<input type="number" data-idx="' + idx + '" data-field="balance" value="' + loan.balance + '" min="0" step="100" />' +
+          '</div>' +
+          '<div>' +
+            '<label>Rate (%)</label>' +
+            '<input type="number" data-idx="' + idx + '" data-field="rate" value="' + loan.rate + '" min="0" max="100" step="0.1" />' +
+          '</div>' +
+          '<div>' +
+            '<label>Monthly Payment ($)</label>' +
+            '<input type="number" data-idx="' + idx + '" data-field="payment" value="' + loan.payment + '" min="0" step="10" />' +
+          '</div>' +
+          '<div>' +
+            '<label>&nbsp;</label>' +
+            '<button class="btn-ghost" data-remove="' + idx + '">Remove</button>' +
+          '</div>' +
+          '<div class="loan-meta">' +
+            (meta.neverPaysOff
+              ? '<span class="warn">⚠ Payment too low — does not cover monthly interest (' + formatUSD(meta.monthlyInterest) + '/mo).</span>'
+              : '<span>Pays off in <strong>' + formatMonths(meta.monthsToPayoff) + '</strong></span>' +
+                '<span>Total interest: <strong>' + formatUSD(meta.totalInterest) + '</strong></span>' +
+                '<span>Total paid: <strong>' + formatUSD(meta.totalPaid) + '</strong></span>'
+            ) +
+          '</div>';
+
+        container.appendChild(row);
+      });
+
+      // Wire up loan input handlers
+      container.querySelectorAll("input").forEach(function (el) {
+        el.addEventListener("input", function (e) {
+          var idx = parseInt(e.target.getAttribute("data-idx"));
+          var field = e.target.getAttribute("data-field");
+          var value = field === "name" ? e.target.value : (parseFloat(e.target.value) || 0);
+          loans[idx][field] = value;
+          calculate();
+          // Only re-render loan meta (not full list) to preserve focus
+          var metaDiv = e.target.closest(".loan-row").querySelector(".loan-meta");
+          var meta = simulateLoan(loans[idx].balance, loans[idx].rate, loans[idx].payment);
+          metaDiv.innerHTML = meta.neverPaysOff
+            ? '<span class="warn">⚠ Payment too low — does not cover monthly interest (' + formatUSD(meta.monthlyInterest) + '/mo).</span>'
+            : '<span>Pays off in <strong>' + formatMonths(meta.monthsToPayoff) + '</strong></span>' +
+              '<span>Total interest: <strong>' + formatUSD(meta.totalInterest) + '</strong></span>' +
+              '<span>Total paid: <strong>' + formatUSD(meta.totalPaid) + '</strong></span>';
+        });
+      });
+
+      container.querySelectorAll("[data-remove]").forEach(function (btn) {
+        btn.addEventListener("click", function (e) {
+          var idx = parseInt(e.target.getAttribute("data-remove"));
+          loans.splice(idx, 1);
+          renderLoans();
+          calculate();
+        });
+      });
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, function (c) {
+        return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c];
+      });
+    }
+
+    // ---------- Single-loan simulation (for display) ----------
+    function simulateLoan(balance, annualRate, payment) {
+      var monthlyRate = annualRate / 100 / 12;
+      var monthlyInterest = balance * monthlyRate;
+
+      if (balance <= 0 || payment <= 0) {
+        return { monthsToPayoff: 0, totalInterest: 0, totalPaid: 0, neverPaysOff: false, monthlyInterest: monthlyInterest };
+      }
+
+      if (payment <= monthlyInterest) {
+        return { neverPaysOff: true, monthlyInterest: monthlyInterest };
+      }
+
+      var b = balance;
+      var totalInterest = 0;
+      var totalPaid = 0;
+      var months = 0;
+      var MAX_MONTHS = 12 * 100; // 100-year safety cap
+
+      while (b > 0 && months < MAX_MONTHS) {
+        var interest = b * monthlyRate;
+        var actualPayment = Math.min(payment, b + interest);
+        b = b + interest - actualPayment;
+        totalInterest += interest;
+        totalPaid += actualPayment;
+        months++;
+        if (b < 0.01) b = 0;
+      }
+
+      return {
+        monthsToPayoff: months,
+        totalInterest: totalInterest,
+        totalPaid: totalPaid,
+        neverPaysOff: false,
+        monthlyInterest: monthlyInterest
+      };
+    }
+
+    // ---------- Add loan button ----------
+    document.getElementById("addLoanBtn").addEventListener("click", function () {
+      loans.push({ name: "Loan " + (++loanIdCounter), balance: 5000, rate: 6, payment: 100 });
+      renderLoans();
+      calculate();
+    });
+
+    // ---------- Main calculation: full month-by-month simulation ----------
     function calculate() {
-      // --- Income ---
+      // Income
       var annualIncome = num("annualIncome");
       var taxRate = num("taxRate") / 100;
       var monthlyTakeHome = (annualIncome * (1 - taxRate)) / 12;
       document.getElementById("monthlyTakeHome").textContent = formatUSD(monthlyTakeHome);
 
-      // --- Costs ---
+      // Costs
       var totalCosts =
-        num("rent") +
-        num("food") +
-        num("carPayment") +
-        num("carInsurance") +
-        num("phone") +
-        num("utilities") +
-        num("misc");
+        num("rent") + num("food") + num("carPayment") +
+        num("carInsurance") + num("phone") + num("utilities") + num("misc");
       document.getElementById("totalCosts").textContent = formatUSD(totalCosts);
 
-      // --- Savings ---
-      var monthlySavings = monthlyTakeHome - totalCosts;
-      document.getElementById("monthlySavings").textContent = formatUSD(monthlySavings);
+      // Loan summary (initial state)
+      var totalDebt = loans.reduce(function (s, l) { return s + (l.balance || 0); }, 0);
+      var totalLoanPayments = loans.reduce(function (s, l) { return s + (l.payment || 0); }, 0);
+      document.getElementById("totalDebt").textContent = formatUSD(totalDebt);
+      document.getElementById("totalLoanPayments").textContent = formatUSD(totalLoanPayments);
 
+      // Monthly savings (display only — uses initial loan payment total)
+      var monthlySavings = monthlyTakeHome - totalCosts - totalLoanPayments;
+      document.getElementById("monthlySavings").textContent = formatUSD(monthlySavings);
       var savingsSummary = document.getElementById("savingsSummary");
       var warning = document.getElementById("savingsWarning");
       savingsSummary.classList.remove("positive", "negative");
@@ -422,56 +662,89 @@
         warning.style.display = "block";
       }
 
-      // --- Investment projection ---
+      // Investment simulation — monthly, with loans paying down over time
       var principal = num("principal");
       var annualRate = num("rate");
       var years = Math.max(1, parseInt(document.getElementById("years").value) || 1);
-
-      // Clamp monthly contribution to >= 0 for projection purposes
-      var monthlyContribution = Math.max(0, monthlySavings);
-
       var monthlyRate = annualRate / 100 / 12;
       var months = years * 12;
 
-      var data = [];
-      var balance = principal;
-      var totalContributed = principal;
+      // Clone loan state for simulation
+      var loanState = loans.map(function (l) {
+        return { balance: l.balance || 0, rate: (l.rate || 0) / 100 / 12, payment: l.payment || 0 };
+      });
 
-      for (var y = 1; y <= years; y++) {
-        for (var m = 0; m < 12; m++) {
-          balance = balance * (1 + monthlyRate) + monthlyContribution;
-          totalContributed += monthlyContribution;
+      var investment = principal;
+      var totalContributions = principal;
+      var totalInterestPaidOnDebt = 0;
+      var debtFreeMonth = null;
+      var hadDebt = loanState.some(function (l) { return l.balance > 0; });
+
+      var data = [];
+
+      for (var m = 1; m <= months; m++) {
+        // Service loans
+        var loanPaidThisMonth = 0;
+        for (var i = 0; i < loanState.length; i++) {
+          var L = loanState[i];
+          if (L.balance <= 0) continue;
+          var interestCharged = L.balance * L.rate;
+          var actualPayment = Math.min(L.payment, L.balance + interestCharged);
+          L.balance = Math.max(0, L.balance + interestCharged - actualPayment);
+          loanPaidThisMonth += actualPayment;
+          totalInterestPaidOnDebt += interestCharged;
         }
-        data.push({
-          year: y,
-          balance: balance,
-          contributed: totalContributed,
-          interest: balance - totalContributed
-        });
+
+        // Check debt-free transition
+        var totalDebtRemaining = loanState.reduce(function (s, L) { return s + L.balance; }, 0);
+        if (hadDebt && debtFreeMonth === null && totalDebtRemaining <= 0.01) {
+          debtFreeMonth = m;
+        }
+
+        // Monthly contribution = take-home - costs - loan payments (clamped to 0)
+        var contribution = Math.max(0, monthlyTakeHome - totalCosts - loanPaidThisMonth);
+
+        // Grow investment
+        investment = investment * (1 + monthlyRate) + contribution;
+        totalContributions += contribution;
+
+        // Record at year boundaries
+        if (m % 12 === 0) {
+          data.push({
+            year: m / 12,
+            balance: investment,
+            contributed: totalContributions,
+            interest: investment - totalContributions,
+            debtRemaining: totalDebtRemaining
+          });
+        }
       }
 
       var last = data[data.length - 1];
-      var totalValue = last.balance;
-      var totalInterest = last.interest;
-      var totalContrib = last.contributed;
-
-      document.getElementById("totalValue").textContent = formatUSD(totalValue);
-      document.getElementById("totalInterest").textContent = formatUSD(totalInterest);
-      document.getElementById("totalContrib").textContent = formatUSD(totalContrib);
+      document.getElementById("totalValue").textContent = formatUSD(last.balance);
+      document.getElementById("totalInterest").textContent = formatUSD(last.interest);
+      document.getElementById("totalContrib").textContent = formatUSD(last.contributed);
       document.getElementById("interestPct").textContent =
-        totalContrib > 0
-          ? Math.round((totalInterest / totalContrib) * 100) + "% return on contributions"
+        last.contributed > 0
+          ? Math.round((last.interest / last.contributed) * 100) + "% return on contributions"
           : "";
 
-      if (months > 0 && principal > 0 && totalValue > 0) {
-        var effectiveMonthly = (Math.pow(totalValue / principal, 1 / months) - 1) * 100;
-        document.getElementById("monthlyGrowth").textContent = effectiveMonthly.toFixed(3) + "%";
+      // Debt-free display
+      if (!hadDebt) {
+        document.getElementById("debtFree").textContent = "No debt";
+        document.getElementById("debtInterestPaid").textContent = "";
+      } else if (debtFreeMonth !== null) {
+        document.getElementById("debtFree").textContent = formatMonths(debtFreeMonth);
+        document.getElementById("debtInterestPaid").textContent =
+          formatUSD(totalInterestPaidOnDebt) + " total interest paid";
       } else {
-        document.getElementById("monthlyGrowth").textContent = "--";
+        document.getElementById("debtFree").textContent = "Not within " + years + "y";
+        document.getElementById("debtInterestPaid").textContent =
+          formatUSD(totalInterestPaidOnDebt) + " interest paid so far";
       }
 
-      // --- Bar chart ---
-      var maxVal = totalValue;
+      // Bar chart
+      var maxVal = Math.max(last.balance, totalDebt);
       var chart = document.getElementById("barChart");
       chart.innerHTML = "";
 
@@ -479,12 +752,13 @@
       if (years > 30) step = 5;
       else if (years > 15) step = 2;
 
-      for (var i = 0; i < data.length; i++) {
-        if ((i + 1) % step !== 0 && i !== data.length - 1) continue;
+      for (var j = 0; j < data.length; j++) {
+        if ((j + 1) % step !== 0 && j !== data.length - 1) continue;
 
-        var d = data[i];
+        var d = data[j];
         var pctContrib = maxVal > 0 ? (d.contributed / maxVal) * 100 : 0;
         var pctInterest = maxVal > 0 ? (d.interest / maxVal) * 100 : 0;
+        var pctDebt = maxVal > 0 ? (d.debtRemaining / maxVal) * 100 : 0;
 
         var row = document.createElement("div");
         row.className = "bar-row";
@@ -493,13 +767,19 @@
           '<div class="bar-track">' +
             '<div class="bar-principal" style="width:' + pctContrib + '%"></div>' +
             '<div class="bar-interest" style="width:' + pctInterest + '%"></div>' +
+            (d.debtRemaining > 0.01 ? '<div class="bar-debt" style="width:' + pctDebt + '%"></div>' : '') +
           "</div>" +
           '<div class="bar-amount">' + formatUSD(d.balance) + "</div>";
         chart.appendChild(row);
       }
     }
 
-    document.querySelectorAll("input").forEach(function (el) {
+    // Initial render
+    renderLoans();
+
+    document.querySelectorAll(".card input").forEach(function (el) {
+      // Skip loan-list inputs — those wire up in renderLoans
+      if (el.closest("#loansList")) return;
       el.addEventListener("input", calculate);
     });
 
