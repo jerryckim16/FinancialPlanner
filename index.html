@@ -136,6 +136,40 @@
 
     .loan-row input { background: #fff; }
 
+    .cost-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 8px 12px;
+      background: #fafafa;
+      border: 1px solid #e0e0e0;
+      border-radius: 10px;
+      margin-bottom: 8px;
+    }
+
+    .cost-row input { background: #fff; }
+
+    .cost-row .dollar-prefix {
+      position: relative;
+    }
+
+    .cost-row .dollar-prefix::before {
+      content: "$";
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #86868b;
+      font-size: 14px;
+      font-family: "SF Mono", "Fira Code", monospace;
+      pointer-events: none;
+    }
+
+    .cost-row .dollar-prefix input {
+      padding-left: 24px;
+    }
+
     .loan-meta {
       grid-column: 1 / -1;
       font-size: 11px;
@@ -340,45 +374,16 @@
 
     <!-- Monthly Costs -->
     <div class="card">
-      <h2>Monthly Costs</h2>
-      <div class="field-group">
-        <div>
-          <label for="rent">Rent / Mortgage ($)</label>
-          <input type="number" id="rent" value="1500" min="0" step="50" />
-        </div>
-        <div>
-          <label for="food">Food ($)</label>
-          <input type="number" id="food" value="500" min="0" step="25" />
-        </div>
+      <div class="card-header">
+        <h2>Monthly Costs</h2>
+        <button class="btn-primary" id="addCostBtn">+ Add Cost</button>
       </div>
-      <div class="field-group">
-        <div>
-          <label for="carPayment">Car Payment ($)</label>
-          <input type="number" id="carPayment" value="300" min="0" step="25" />
-        </div>
-        <div>
-          <label for="carInsurance">Car Insurance ($)</label>
-          <input type="number" id="carInsurance" value="120" min="0" step="10" />
-        </div>
-      </div>
-      <div class="field-group three">
-        <div>
-          <label for="phone">Phone ($)</label>
-          <input type="number" id="phone" value="60" min="0" step="5" />
-        </div>
-        <div>
-          <label for="utilities">Utilities ($)</label>
-          <input type="number" id="utilities" value="150" min="0" step="10" />
-        </div>
-        <div>
-          <label for="misc">Other ($)</label>
-          <input type="number" id="misc" value="100" min="0" step="10" />
-        </div>
-      </div>
+      <div id="costsList"></div>
       <div class="inline-summary">
         <span class="label-text">Total Monthly Costs</span>
         <span class="value-text" id="totalCosts">--</span>
       </div>
+      <div class="note">Add any recurring monthly expense. Name and amount are fully editable — click a name to rename it.</div>
     </div>
 
     <!-- Loans -->
@@ -468,11 +473,22 @@
   </div>
 
   <script>
-    // ---------- State: loans are held in a simple array ----------
+    // ---------- State: loans and costs are held in simple arrays ----------
     var loans = [
       { name: "Student Loan", balance: 25000, rate: 5.5, payment: 280 }
     ];
     var loanIdCounter = 0;
+
+    var costs = [
+      { name: "Rent / Mortgage", amount: 1500 },
+      { name: "Food", amount: 500 },
+      { name: "Car Payment", amount: 300 },
+      { name: "Car Insurance", amount: 120 },
+      { name: "Phone", amount: 60 },
+      { name: "Utilities", amount: 150 },
+      { name: "Other", amount: 100 }
+    ];
+    var costIdCounter = 0;
 
     // ---------- Helpers ----------
     function formatUSD(n) {
@@ -493,6 +509,51 @@
       if (years === 0) return months + "mo";
       if (months === 0) return years + "y";
       return years + "y " + months + "mo";
+    }
+
+    // ---------- Cost list rendering ----------
+    function renderCosts() {
+      var container = document.getElementById("costsList");
+      container.innerHTML = "";
+
+      if (costs.length === 0) {
+        var empty = document.createElement("div");
+        empty.className = "empty-state";
+        empty.textContent = "No costs — click 'Add Cost' to start tracking expenses.";
+        container.appendChild(empty);
+        return;
+      }
+
+      costs.forEach(function (cost, idx) {
+        var row = document.createElement("div");
+        row.className = "cost-row";
+        row.innerHTML =
+          '<input type="text" data-idx="' + idx + '" data-field="name" value="' + escapeHtml(cost.name) + '" placeholder="Cost name" />' +
+          '<div class="dollar-prefix">' +
+            '<input type="number" data-idx="' + idx + '" data-field="amount" value="' + cost.amount + '" min="0" step="10" />' +
+          '</div>' +
+          '<button class="btn-ghost" data-remove="' + idx + '">Remove</button>';
+        container.appendChild(row);
+      });
+
+      container.querySelectorAll("input").forEach(function (el) {
+        el.addEventListener("input", function (e) {
+          var idx = parseInt(e.target.getAttribute("data-idx"));
+          var field = e.target.getAttribute("data-field");
+          var value = field === "name" ? e.target.value : (parseFloat(e.target.value) || 0);
+          costs[idx][field] = value;
+          calculate();
+        });
+      });
+
+      container.querySelectorAll("[data-remove]").forEach(function (btn) {
+        btn.addEventListener("click", function (e) {
+          var idx = parseInt(e.target.getAttribute("data-remove"));
+          costs.splice(idx, 1);
+          renderCosts();
+          calculate();
+        });
+      });
     }
 
     // ---------- Loan list rendering ----------
@@ -628,6 +689,13 @@
       calculate();
     });
 
+    // ---------- Add cost button ----------
+    document.getElementById("addCostBtn").addEventListener("click", function () {
+      costs.push({ name: "New Cost " + (++costIdCounter), amount: 0 });
+      renderCosts();
+      calculate();
+    });
+
     // ---------- Main calculation: full month-by-month simulation ----------
     function calculate() {
       // Income
@@ -636,10 +704,8 @@
       var monthlyTakeHome = (annualIncome * (1 - taxRate)) / 12;
       document.getElementById("monthlyTakeHome").textContent = formatUSD(monthlyTakeHome);
 
-      // Costs
-      var totalCosts =
-        num("rent") + num("food") + num("carPayment") +
-        num("carInsurance") + num("phone") + num("utilities") + num("misc");
+      // Costs (sum of dynamic cost list)
+      var totalCosts = costs.reduce(function (s, c) { return s + (c.amount || 0); }, 0);
       document.getElementById("totalCosts").textContent = formatUSD(totalCosts);
 
       // Loan summary (initial state)
@@ -775,11 +841,12 @@
     }
 
     // Initial render
+    renderCosts();
     renderLoans();
 
     document.querySelectorAll(".card input").forEach(function (el) {
-      // Skip loan-list inputs — those wire up in renderLoans
-      if (el.closest("#loansList")) return;
+      // Skip list inputs — those wire up in their own render functions
+      if (el.closest("#costsList") || el.closest("#loansList")) return;
       el.addEventListener("input", calculate);
     });
 
