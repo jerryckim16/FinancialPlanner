@@ -133,7 +133,7 @@ function calculate() {
       formatUSD(totalInterestPaidOnDebt) + " interest paid so far";
   }
 
-  // Bar chart
+  // Horizontal bar chart with canvas
   var maxBalance = last.balance;
   var maxDebt = totalDebt;
   var chart = document.getElementById("barChart");
@@ -143,36 +143,185 @@ function calculate() {
   if (years > 60) step = 5;
   else if (years > 40) step = 2;
 
+  var filteredData = [];
   for (var j = 0; j < data.length; j++) {
     if ((j + 1) % step !== 0 && j !== data.length - 1) continue;
+    filteredData.push(data[j]);
+  }
 
-    var d = data[j];
-    var pctContrib = maxBalance > 0 ? (d.contributed / maxBalance) * 100 : 0;
-    var pctInterest = maxBalance > 0 ? (d.interest / maxBalance) * 100 : 0;
-    var hasDebt = d.debtRemaining > 0.01;
-    var pctDebt = maxDebt > 0 ? (d.debtRemaining / maxDebt) * 100 : 0;
+  var dpr = window.devicePixelRatio || 1;
+  var chartW = chart.offsetWidth || 670;
+  var n = filteredData.length;
+  var rowH = 28;
+  var rowGap = 4;
+  var padL = 45;
+  var padR = 15;
+  var padT = 25;
+  var padB = 10;
+  var chartH = padT + n * (rowH + rowGap) + padB;
+  var canvas = document.createElement("canvas");
+  canvas.width = chartW * dpr;
+  canvas.height = chartH * dpr;
+  canvas.style.width = chartW + "px";
+  canvas.style.height = chartH + "px";
+  var ctx = canvas.getContext("2d");
+  ctx.scale(dpr, dpr);
+  chart.appendChild(canvas);
 
-    var debtHtml = "";
-    if (hasDebt) {
-      debtHtml =
-        '<div class="bar-debt-track">' +
-          '<div class="bar-debt" style="width:' + pctDebt + '%"></div>' +
-          '<span class="bar-debt-label">' + formatUSD(d.debtRemaining) + '</span>' +
-        '</div>';
+  var plotW = chartW - padL - padR;
+
+  var xMax = maxBalance > 0 ? maxBalance * 1.05 : 1;
+  var xMin = maxDebt > 0 ? -maxDebt * 1.1 : -(xMax * 0.02);
+  var xRange = xMax - xMin;
+  function xPos(v) { return padL + ((v - xMin) / xRange) * plotW; }
+  var zeroX = xPos(0);
+
+  // X-axis grid lines and labels at top
+  var tickStep = computeTickStep(xMax);
+  ctx.font = "10px 'JetBrains Mono', monospace";
+  ctx.textAlign = "center";
+
+  for (var t = 0; t <= xMax; t += tickStep) {
+    var tx = xPos(t);
+    ctx.strokeStyle = "#e8e8ed";
+    ctx.lineWidth = 0.5;
+    ctx.beginPath();
+    ctx.moveTo(tx, padT);
+    ctx.lineTo(tx, chartH - padB);
+    ctx.stroke();
+    ctx.fillStyle = "#86868b";
+    ctx.fillText(formatCompactUSD(t), tx, padT - 8);
+  }
+
+  if (maxDebt > 0) {
+    var debtTickStep = computeTickStep(maxDebt);
+    for (var t = -debtTickStep; t >= xMin; t -= debtTickStep) {
+      var tx = xPos(t);
+      ctx.strokeStyle = "#e8e8ed";
+      ctx.lineWidth = 0.5;
+      ctx.beginPath();
+      ctx.moveTo(tx, padT);
+      ctx.lineTo(tx, chartH - padB);
+      ctx.stroke();
+      ctx.fillStyle = "#c0868b";
+      ctx.fillText(formatCompactUSD(t), tx, padT - 8);
+    }
+  }
+
+  // Zero line
+  ctx.strokeStyle = "#bbb";
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(zeroX, padT);
+  ctx.lineTo(zeroX, chartH - padB);
+  ctx.stroke();
+
+  // Draw bars
+  var netWorthPoints = [];
+  for (var i = 0; i < n; i++) {
+    var d = filteredData[i];
+    var cy = padT + i * (rowH + rowGap) + rowH / 2;
+    var barTop = cy - rowH / 2 + 2;
+    var barH = rowH - 4;
+
+    // Portfolio bars (right of zero)
+    if (d.interest >= 0) {
+      var contribRight = xPos(d.contributed);
+      ctx.fillStyle = "#0071e3";
+      roundedRect(ctx, zeroX, barTop, contribRight - zeroX, barH, 3, "left");
+      ctx.fill();
+
+      var balRight = xPos(d.balance);
+      ctx.fillStyle = "#34c759";
+      roundedRect(ctx, contribRight, barTop, balRight - contribRight, barH, 3, "right");
+      ctx.fill();
+    } else {
+      var balRight = xPos(Math.max(0, d.balance));
+      ctx.fillStyle = "#0071e3";
+      roundedRect(ctx, zeroX, barTop, balRight - zeroX, barH, 3, "both");
+      ctx.fill();
     }
 
-    var row = document.createElement("div");
-    row.className = "bar-row";
-    row.innerHTML =
-      '<div class="bar-label">' + d.year + "y</div>" +
-      '<div class="bar-group">' +
-        '<div class="bar-track">' +
-          '<div class="bar-principal" style="width:' + pctContrib + '%"></div>' +
-          '<div class="bar-interest" style="width:' + pctInterest + '%"></div>' +
-        '</div>' +
-        debtHtml +
-      '</div>' +
-      '<div class="bar-amount">' + formatUSD(d.balance) + "</div>";
-    chart.appendChild(row);
+    // Debt bar (left of zero)
+    if (d.debtRemaining > 0.01) {
+      var debtLeft = xPos(-d.debtRemaining);
+      ctx.fillStyle = "#ff3b30";
+      roundedRect(ctx, debtLeft, barTop, zeroX - debtLeft, barH, 3, "both");
+      ctx.fill();
+    }
+
+    // Year label
+    ctx.fillStyle = "#86868b";
+    ctx.textAlign = "right";
+    ctx.font = "11px 'JetBrains Mono', monospace";
+    ctx.fillText(d.year + "y", padL - 8, cy + 4);
+
+    // Balance label at end of bar
+    var labelX = d.interest >= 0 ? xPos(d.balance) : xPos(Math.max(0, d.balance));
+    ctx.fillStyle = "#1d1d1f";
+    ctx.textAlign = "left";
+    ctx.font = "10px 'JetBrains Mono', monospace";
+    ctx.fillText(formatCompactUSD(d.balance), labelX + 5, cy + 4);
+
+    // Net worth point
+    var nw = d.balance - d.debtRemaining;
+    netWorthPoints.push({ x: xPos(nw), y: cy });
+  }
+
+  // Net worth line
+  if (netWorthPoints.length > 1) {
+    ctx.strokeStyle = "rgba(30, 30, 30, 0.7)";
+    ctx.lineWidth = 2;
+    ctx.setLineDash([5, 3]);
+    ctx.beginPath();
+    for (var i = 0; i < netWorthPoints.length; i++) {
+      var p = netWorthPoints[i];
+      if (i === 0) ctx.moveTo(p.x, p.y);
+      else ctx.lineTo(p.x, p.y);
+    }
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Dots
+    ctx.fillStyle = "#1d1d1f";
+    for (var i = 0; i < netWorthPoints.length; i++) {
+      var p = netWorthPoints[i];
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  function roundedRect(ctx, x, y, w, h, r, side) {
+    if (w <= 0) return;
+    r = Math.min(r, w / 2, h / 2);
+    ctx.beginPath();
+    if (side === "left") {
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w, y);
+      ctx.lineTo(x + w, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.arcTo(x, y + h, x, y + h - r, r);
+      ctx.lineTo(x, y + r);
+      ctx.arcTo(x, y, x + r, y, r);
+    } else if (side === "right") {
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.arcTo(x + w, y, x + w, y + r, r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+      ctx.lineTo(x, y + h);
+    } else {
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.arcTo(x + w, y, x + w, y + r, r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+      ctx.lineTo(x + r, y + h);
+      ctx.arcTo(x, y + h, x, y + h - r, r);
+      ctx.lineTo(x, y + r);
+      ctx.arcTo(x, y, x + r, y, r);
+    }
+    ctx.closePath();
   }
 }

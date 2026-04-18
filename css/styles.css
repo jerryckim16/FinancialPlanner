@@ -342,83 +342,13 @@ button {
 
 /* --- Bar Chart --- */
 
-.bar-chart { margin-top: 8px; }
-
-.bar-row {
-  display: flex;
-  align-items: flex-start;
-  margin-bottom: 6px;
-  font-size: 12px;
+.bar-chart {
+  margin-top: 8px;
 }
 
-.bar-row .bar-label {
-  padding-top: 2px;
-}
-
-.bar-row .bar-amount {
-  padding-top: 2px;
-}
-
-.bar-label {
-  width: 50px;
-  text-align: right;
-  padding-right: 10px;
-  color: #86868b;
-  font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Consolas", monospace;
-  flex-shrink: 0;
-}
-
-.bar-group {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.bar-track {
-  height: 22px;
-  background: #eee;
-  border-radius: 6px;
-  overflow: hidden;
-  display: flex;
-}
-
-.bar-principal { background: #0071e3; height: 100%; transition: width 0.3s; border-radius: 6px 0 0 6px; }
-.bar-interest { background: #34c759; height: 100%; transition: width 0.3s; }
-
-.bar-debt-track {
-  height: 10px;
-  background: #fde8e8;
-  border-radius: 4px;
-  overflow: hidden;
-  position: relative;
-}
-
-.bar-debt {
-  background: #ff3b30;
-  height: 100%;
-  transition: width 0.3s;
-  border-radius: 4px 0 0 4px;
-}
-
-.bar-debt-label {
-  position: absolute;
-  right: 6px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 9px;
-  font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Consolas", monospace;
-  color: #993030;
-  white-space: nowrap;
-}
-
-.bar-amount {
-  width: 100px;
-  text-align: right;
-  padding-left: 10px;
-  font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Consolas", monospace;
-  color: #1d1d1f;
-  flex-shrink: 0;
+.bar-chart canvas {
+  display: block;
+  width: 100%;
 }
 
 /* --- Legend --- */
@@ -445,6 +375,14 @@ button {
 .legend .leg-principal::before { background: #0071e3; }
 .legend .leg-interest::before { background: #34c759; }
 .legend .leg-debt::before { background: #ff3b30; }
+.legend .leg-networth::before {
+  background: transparent;
+  width: 16px;
+  height: 2px;
+  border-top: 2px dashed #1d1d1f;
+  border-radius: 0;
+  vertical-align: middle;
+}
 
 /* --- Utility --- */
 
