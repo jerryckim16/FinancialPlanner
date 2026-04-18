@@ -1,0 +1,388 @@
+/* ==========================================================================
+   Financial Planner – Styles
+   ========================================================================== */
+
+/* --- Reset & Base --- */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #f5f5f7;
+  color: #1d1d1f;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* --- Header --- */
+
+header {
+  background: #fff;
+  border-bottom: 1px solid #e8e8ed;
+  padding: 20px 24px;
+}
+
+header h1 {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #1d1d1f;
+}
+
+/* --- Layout --- */
+
+.container {
+  max-width: 720px;
+  margin: 32px auto;
+  padding: 0 16px;
+}
+
+/* --- Cards --- */
+
+.card {
+  background: #fff;
+  border: 1px solid #f0f0f0;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.card h2 {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #86868b;
+  margin-bottom: 16px;
+  padding-left: 10px;
+  border-left: 3px solid #0071e3;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.card-header h2 { margin-bottom: 0; }
+
+/* --- Form Fields --- */
+
+.field-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.field-group.full { grid-template-columns: 1fr; }
+.field-group.three { grid-template-columns: 1fr 1fr 1fr; }
+
+label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: #86868b;
+  margin-bottom: 4px;
+}
+
+input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d2d2d7;
+  border-radius: 8px;
+  font-size: 15px;
+  font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Consolas", monospace;
+  background: #fafafa;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+input[type="text"] {
+  font-family: inherit;
+}
+
+input:focus {
+  outline: none;
+  background: #fff;
+  border-color: #0071e3;
+  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.12);
+}
+
+/* --- Buttons --- */
+
+button {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 7px 14px;
+  transition: all 0.15s;
+}
+
+.btn-primary {
+  background: #0071e3;
+  color: #fff;
+}
+.btn-primary:hover { background: #005bb5; }
+
+.btn-ghost {
+  background: transparent;
+  color: #86868b;
+  border-color: transparent;
+  padding: 4px 8px;
+  font-size: 12px;
+}
+.btn-ghost:hover { color: #d70015; }
+
+/* --- Cost Rows --- */
+
+.cost-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 12px;
+  background: #fafafa;
+  border: 1px solid #e8e8ed;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.cost-row:hover {
+  border-color: #c0c0c7;
+  background: #f8f8fa;
+}
+
+.cost-row input { background: #fff; }
+
+.cost-row .dollar-prefix {
+  position: relative;
+}
+
+.cost-row .dollar-prefix::before {
+  content: "$";
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #86868b;
+  font-size: 14px;
+  font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Consolas", monospace;
+  pointer-events: none;
+}
+
+.cost-row .dollar-prefix input {
+  padding-left: 24px;
+}
+
+/* --- Loan Rows --- */
+
+.loan-row {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 0.8fr 1fr auto;
+  gap: 10px;
+  align-items: end;
+  padding: 12px;
+  background: #fafafa;
+  border: 1px solid #e8e8ed;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.loan-row:hover {
+  border-color: #c0c0c7;
+  background: #f8f8fa;
+}
+
+.loan-row input { background: #fff; }
+
+.loan-meta {
+  grid-column: 1 / -1;
+  font-size: 11px;
+  color: #86868b;
+  font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Consolas", monospace;
+  padding-top: 6px;
+  border-top: 1px dashed #e0e0e0;
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.loan-meta span { white-space: nowrap; }
+.loan-meta .warn { color: #d70015; }
+
+/* --- Empty State --- */
+
+.empty-state {
+  text-align: center;
+  padding: 20px;
+  color: #86868b;
+  font-size: 13px;
+}
+
+/* --- Inline Summary --- */
+
+.inline-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  background: #f5f5f7;
+  border-radius: 8px;
+  margin-top: 12px;
+  font-size: 13px;
+}
+
+.inline-summary .label-text {
+  color: #86868b;
+  font-weight: 500;
+}
+
+.inline-summary .value-text {
+  font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Consolas", monospace;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.inline-summary.positive .value-text { color: #0a8a2a; }
+.inline-summary.negative .value-text { color: #d70015; }
+
+/* --- Results / Stat Cards --- */
+
+.results {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.stat-card {
+  background: #f5f5f7;
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.stat-card.highlight {
+  background: linear-gradient(135deg, #0071e3 0%, #005bb5 100%);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 113, 227, 0.25);
+}
+
+.stat-label {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.7;
+  margin-bottom: 4px;
+}
+
+.stat-value {
+  font-size: 22px;
+  font-weight: 700;
+  font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Consolas", monospace;
+}
+
+.stat-sub {
+  font-size: 11px;
+  opacity: 0.6;
+  margin-top: 2px;
+}
+
+/* --- Bar Chart --- */
+
+.bar-chart { margin-top: 8px; }
+
+.bar-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+  font-size: 12px;
+}
+
+.bar-label {
+  width: 50px;
+  text-align: right;
+  padding-right: 10px;
+  color: #86868b;
+  font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Consolas", monospace;
+  flex-shrink: 0;
+}
+
+.bar-track {
+  flex: 1;
+  height: 28px;
+  background: #eee;
+  border-radius: 6px;
+  overflow: hidden;
+  display: flex;
+}
+
+.bar-principal { background: #0071e3; height: 100%; transition: width 0.3s; border-radius: 6px 0 0 6px; }
+.bar-interest { background: #34c759; height: 100%; transition: width 0.3s; }
+.bar-debt { background: #ff3b30; height: 100%; transition: width 0.3s; }
+
+.bar-amount {
+  width: 90px;
+  text-align: right;
+  padding-left: 10px;
+  font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Consolas", monospace;
+  color: #1d1d1f;
+  flex-shrink: 0;
+}
+
+/* --- Legend --- */
+
+.legend {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 12px;
+  font-size: 12px;
+  color: #86868b;
+  flex-wrap: wrap;
+}
+
+.legend span::before {
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.legend .leg-principal::before { background: #0071e3; }
+.legend .leg-interest::before { background: #34c759; }
+.legend .leg-debt::before { background: #ff3b30; }
+
+/* --- Utility --- */
+
+.note {
+  font-size: 11px;
+  color: #86868b;
+  margin-top: 8px;
+}
+
+.warning-banner {
+  background: #fff4e5;
+  border: 1px solid #ffcc80;
+  color: #995c00;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-top: 12px;
+  font-size: 13px;
+}
+
+/* --- Responsive --- */
+
+@media (max-width: 500px) {
+  .field-group, .field-group.three { grid-template-columns: 1fr; }
+  .results { grid-template-columns: 1fr; }
+  .loan-row { grid-template-columns: 1fr 1fr; }
+}
