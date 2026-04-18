@@ -346,9 +346,17 @@ button {
 
 .bar-row {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: 6px;
   font-size: 12px;
+}
+
+.bar-row .bar-label {
+  padding-top: 2px;
+}
+
+.bar-row .bar-amount {
+  padding-top: 2px;
 }
 
 .bar-label {
@@ -360,9 +368,15 @@ button {
   flex-shrink: 0;
 }
 
-.bar-track {
+.bar-group {
   flex: 1;
-  height: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.bar-track {
+  height: 22px;
   background: #eee;
   border-radius: 6px;
   overflow: hidden;
@@ -371,10 +385,35 @@ button {
 
 .bar-principal { background: #0071e3; height: 100%; transition: width 0.3s; border-radius: 6px 0 0 6px; }
 .bar-interest { background: #34c759; height: 100%; transition: width 0.3s; }
-.bar-debt { background: #ff3b30; height: 100%; transition: width 0.3s; }
+
+.bar-debt-track {
+  height: 10px;
+  background: #fde8e8;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.bar-debt {
+  background: #ff3b30;
+  height: 100%;
+  transition: width 0.3s;
+  border-radius: 4px 0 0 4px;
+}
+
+.bar-debt-label {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 9px;
+  font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Consolas", monospace;
+  color: #993030;
+  white-space: nowrap;
+}
 
 .bar-amount {
-  width: 90px;
+  width: 100px;
   text-align: right;
   padding-left: 10px;
   font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Consolas", monospace;

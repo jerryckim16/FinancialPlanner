@@ -134,31 +134,44 @@ function calculate() {
   }
 
   // Bar chart
-  var maxVal = Math.max(last.balance, totalDebt);
+  var maxBalance = last.balance;
+  var maxDebt = totalDebt;
   var chart = document.getElementById("barChart");
   chart.innerHTML = "";
 
   var step = 1;
-  if (years > 30) step = 5;
-  else if (years > 15) step = 2;
+  if (years > 60) step = 5;
+  else if (years > 40) step = 2;
 
   for (var j = 0; j < data.length; j++) {
     if ((j + 1) % step !== 0 && j !== data.length - 1) continue;
 
     var d = data[j];
-    var pctContrib = maxVal > 0 ? (d.contributed / maxVal) * 100 : 0;
-    var pctInterest = maxVal > 0 ? (d.interest / maxVal) * 100 : 0;
-    var pctDebt = maxVal > 0 ? (d.debtRemaining / maxVal) * 100 : 0;
+    var pctContrib = maxBalance > 0 ? (d.contributed / maxBalance) * 100 : 0;
+    var pctInterest = maxBalance > 0 ? (d.interest / maxBalance) * 100 : 0;
+    var hasDebt = d.debtRemaining > 0.01;
+    var pctDebt = maxDebt > 0 ? (d.debtRemaining / maxDebt) * 100 : 0;
+
+    var debtHtml = "";
+    if (hasDebt) {
+      debtHtml =
+        '<div class="bar-debt-track">' +
+          '<div class="bar-debt" style="width:' + pctDebt + '%"></div>' +
+          '<span class="bar-debt-label">' + formatUSD(d.debtRemaining) + '</span>' +
+        '</div>';
+    }
 
     var row = document.createElement("div");
     row.className = "bar-row";
     row.innerHTML =
       '<div class="bar-label">' + d.year + "y</div>" +
-      '<div class="bar-track">' +
-        '<div class="bar-principal" style="width:' + pctContrib + '%"></div>' +
-        '<div class="bar-interest" style="width:' + pctInterest + '%"></div>' +
-        (d.debtRemaining > 0.01 ? '<div class="bar-debt" style="width:' + pctDebt + '%"></div>' : '') +
-      "</div>" +
+      '<div class="bar-group">' +
+        '<div class="bar-track">' +
+          '<div class="bar-principal" style="width:' + pctContrib + '%"></div>' +
+          '<div class="bar-interest" style="width:' + pctInterest + '%"></div>' +
+        '</div>' +
+        debtHtml +
+      '</div>' +
       '<div class="bar-amount">' + formatUSD(d.balance) + "</div>";
     chart.appendChild(row);
   }
