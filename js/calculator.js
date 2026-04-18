@@ -41,6 +41,16 @@ function calculate() {
     return { balance: l.balance || 0, rate: (l.rate || 0) / 100 / 12, payment: l.payment || 0 };
   });
 
+  // Clone cost state with a per-cost monthly inflation factor.
+  // annualInflation% compounded over 12 months equals (1 + annualInflation/100) per year.
+  var costState = costs.map(function (c) {
+    var annualInflation = c.inflation || 0;
+    return {
+      amount: c.amount || 0,
+      monthlyFactor: Math.pow(1 + annualInflation / 100, 1 / 12)
+    };
+  });
+
   var investment = principal;
   var totalContributions = principal;
   var totalInterestPaidOnDebt = 0;
@@ -68,12 +78,23 @@ function calculate() {
       debtFreeMonth = m;
     }
 
+    // This month's total costs (inflation compounds after each month, so month 1 uses starting values)
+    var thisMonthCosts = 0;
+    for (var ci = 0; ci < costState.length; ci++) {
+      thisMonthCosts += costState[ci].amount;
+    }
+
     // Monthly contribution = take-home - costs - loan payments (clamped to 0)
-    var contribution = Math.max(0, monthlyTakeHome - totalCosts - loanPaidThisMonth);
+    var contribution = Math.max(0, monthlyTakeHome - thisMonthCosts - loanPaidThisMonth);
 
     // Grow investment
     investment = investment * (1 + monthlyRate) + contribution;
     totalContributions += contribution;
+
+    // Apply inflation for the next month
+    for (var ci2 = 0; ci2 < costState.length; ci2++) {
+      costState[ci2].amount *= costState[ci2].monthlyFactor;
+    }
 
     // Record at year boundaries
     if (m % 12 === 0) {
@@ -82,7 +103,8 @@ function calculate() {
         balance: investment,
         contributed: totalContributions,
         interest: investment - totalContributions,
-        debtRemaining: totalDebtRemaining
+        debtRemaining: totalDebtRemaining,
+        monthlyCosts: thisMonthCosts
       });
     }
   }
@@ -91,6 +113,7 @@ function calculate() {
   document.getElementById("totalValue").textContent = formatUSD(last.balance);
   document.getElementById("totalInterest").textContent = formatUSD(last.interest);
   document.getElementById("totalContrib").textContent = formatUSD(last.contributed);
+  document.getElementById("futureCosts").textContent = formatUSD(last.monthlyCosts);
   document.getElementById("interestPct").textContent =
     last.contributed > 0
       ? Math.round((last.interest / last.contributed) * 100) + "% return on contributions"

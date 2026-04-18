@@ -46,7 +46,7 @@
         <span class="label-text">Total Monthly Costs</span>
         <span class="value-text" id="totalCosts">--</span>
       </div>
-      <div class="note">Add any recurring monthly expense. Name and amount are fully editable.</div>
+      <div class="note">Add any recurring monthly expense. The <strong>annual %</strong> column applies inflation to each cost over time (e.g. 3% annual rent growth compounds monthly in the projection).</div>
     </div>
 
     <!-- Loans -->
@@ -71,8 +71,12 @@
     <div class="card">
       <h2>Savings Capacity</h2>
       <div class="inline-summary" id="savingsSummary">
-        <span class="label-text">Monthly Savings (Take-Home &minus; Costs &minus; Loan Payments)</span>
+        <span class="label-text">Monthly Savings Today (Take-Home &minus; Costs &minus; Loan Payments)</span>
         <span class="value-text" id="monthlySavings">--</span>
+      </div>
+      <div class="inline-summary">
+        <span class="label-text">Projected Monthly Costs at End of Period</span>
+        <span class="value-text" id="futureCosts">--</span>
       </div>
       <div class="warning-banner" id="savingsWarning" style="display:none;">
         Your monthly obligations exceed your take-home income. Reduce expenses, restructure loans, or increase income.

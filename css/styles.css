@@ -142,7 +142,7 @@ button {
 
 .cost-row {
   display: grid;
-  grid-template-columns: 2fr 1fr auto;
+  grid-template-columns: 2fr 1fr 0.9fr auto;
   gap: 10px;
   align-items: center;
   padding: 8px 12px;
@@ -160,7 +160,29 @@ button {
 
 .cost-row input { background: #fff; }
 
-.cost-row .dollar-prefix {
+/* Column header row above the cost list */
+.cost-row.cost-header {
+  background: transparent;
+  border: none;
+  padding: 0 12px;
+  margin-bottom: 4px;
+}
+
+.cost-row.cost-header:hover {
+  background: transparent;
+  border-color: transparent;
+}
+
+.cost-row.cost-header span {
+  font-size: 10px;
+  font-weight: 500;
+  color: #86868b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.cost-row .dollar-prefix,
+.cost-row .percent-suffix {
   position: relative;
 }
 
@@ -176,8 +198,32 @@ button {
   pointer-events: none;
 }
 
+.cost-row .percent-suffix::after {
+  content: "%";
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #86868b;
+  font-size: 14px;
+  font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Consolas", monospace;
+  pointer-events: none;
+}
+
 .cost-row .dollar-prefix input {
   padding-left: 24px;
+}
+
+.cost-row .percent-suffix input {
+  padding-right: 26px;
+  /* Hide native number spinners for the tight inflation input */
+  -moz-appearance: textfield;
+}
+
+.cost-row .percent-suffix input::-webkit-outer-spin-button,
+.cost-row .percent-suffix input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 /* --- Loan Rows --- */
@@ -385,4 +431,6 @@ button {
   .field-group, .field-group.three { grid-template-columns: 1fr; }
   .results { grid-template-columns: 1fr; }
   .loan-row { grid-template-columns: 1fr 1fr; }
+  .cost-row { grid-template-columns: 1fr 1fr; }
+  .cost-row.cost-header { display: none; }
 }

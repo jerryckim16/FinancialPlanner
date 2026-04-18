@@ -5,7 +5,7 @@ document.getElementById("addLoanBtn").addEventListener("click", function () {
 });
 
 document.getElementById("addCostBtn").addEventListener("click", function () {
-  costs.push({ name: "New Cost " + (++costIdCounter), amount: 0 });
+  costs.push({ name: "New Cost " + (++costIdCounter), amount: 0, inflation: 0 });
   renderCosts();
   calculate();
 });
