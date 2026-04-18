@@ -133,7 +133,7 @@ function calculate() {
       formatUSD(totalInterestPaidOnDebt) + " interest paid so far";
   }
 
-  // Horizontal bar chart with canvas
+  // Vertical bar chart with canvas
   var maxBalance = last.balance;
   var maxDebt = totalDebt;
   var chart = document.getElementById("barChart");
@@ -151,14 +151,12 @@ function calculate() {
 
   var dpr = window.devicePixelRatio || 1;
   var chartW = chart.offsetWidth || 670;
+  var chartH = 360;
   var n = filteredData.length;
-  var rowH = 28;
-  var rowGap = 4;
-  var padL = 45;
-  var padR = 15;
-  var padT = 25;
-  var padB = 10;
-  var chartH = padT + n * (rowH + rowGap) + padB;
+  var padL = 60;
+  var padR = 20;
+  var padT = 20;
+  var padB = 30;
   var canvas = document.createElement("canvas");
   canvas.width = chartW * dpr;
   canvas.height = chartH * dpr;
@@ -169,42 +167,51 @@ function calculate() {
   chart.appendChild(canvas);
 
   var plotW = chartW - padL - padR;
+  var plotH = chartH - padT - padB;
 
-  var xMax = maxBalance > 0 ? maxBalance * 1.05 : 1;
-  var xMin = maxDebt > 0 ? -maxDebt * 1.1 : -(xMax * 0.02);
-  var xRange = xMax - xMin;
-  function xPos(v) { return padL + ((v - xMin) / xRange) * plotW; }
-  var zeroX = xPos(0);
+  var yMax = maxBalance > 0 ? maxBalance * 1.08 : 1;
+  var yMin;
+  if (maxDebt > 0) {
+    yMin = -Math.max(maxDebt * 1.15, yMax * 0.2);
+  } else {
+    yMin = -(yMax * 0.03);
+  }
+  var yRange = yMax - yMin;
+  function yPos(v) { return padT + ((yMax - v) / yRange) * plotH; }
+  var zeroY = yPos(0);
 
-  // X-axis grid lines and labels at top
-  var tickStep = computeTickStep(xMax);
+  var colSpacing = plotW / n;
+  var barW = Math.max(3, Math.min(colSpacing * 0.65, 28));
+
+  // Y-axis grid lines and labels
   ctx.font = "10px 'JetBrains Mono', monospace";
-  ctx.textAlign = "center";
+  ctx.textAlign = "right";
 
-  for (var t = 0; t <= xMax; t += tickStep) {
-    var tx = xPos(t);
-    ctx.strokeStyle = "#e8e8ed";
+  var tickStep = computeTickStep(yMax);
+  for (var t = 0; t <= yMax; t += tickStep) {
+    var ty = yPos(t);
+    ctx.strokeStyle = "#eef0f3";
     ctx.lineWidth = 0.5;
     ctx.beginPath();
-    ctx.moveTo(tx, padT);
-    ctx.lineTo(tx, chartH - padB);
+    ctx.moveTo(padL, ty);
+    ctx.lineTo(chartW - padR, ty);
     ctx.stroke();
     ctx.fillStyle = "#86868b";
-    ctx.fillText(formatCompactUSD(t), tx, padT - 8);
+    ctx.fillText(formatCompactUSD(t), padL - 8, ty + 3);
   }
 
   if (maxDebt > 0) {
-    var debtTickStep = computeTickStep(maxDebt);
-    for (var t = -debtTickStep; t >= xMin; t -= debtTickStep) {
-      var tx = xPos(t);
-      ctx.strokeStyle = "#e8e8ed";
+    var debtTickStep = computeTickStep(Math.abs(yMin));
+    for (var t = -debtTickStep; t >= yMin; t -= debtTickStep) {
+      var ty = yPos(t);
+      ctx.strokeStyle = "#fbeaea";
       ctx.lineWidth = 0.5;
       ctx.beginPath();
-      ctx.moveTo(tx, padT);
-      ctx.lineTo(tx, chartH - padB);
+      ctx.moveTo(padL, ty);
+      ctx.lineTo(chartW - padR, ty);
       ctx.stroke();
       ctx.fillStyle = "#c0868b";
-      ctx.fillText(formatCompactUSD(t), tx, padT - 8);
+      ctx.fillText(formatCompactUSD(t), padL - 8, ty + 3);
     }
   }
 
@@ -212,65 +219,67 @@ function calculate() {
   ctx.strokeStyle = "#bbb";
   ctx.lineWidth = 1;
   ctx.beginPath();
-  ctx.moveTo(zeroX, padT);
-  ctx.lineTo(zeroX, chartH - padB);
+  ctx.moveTo(padL, zeroY);
+  ctx.lineTo(chartW - padR, zeroY);
   ctx.stroke();
 
   // Draw bars
   var netWorthPoints = [];
   for (var i = 0; i < n; i++) {
     var d = filteredData[i];
-    var cy = padT + i * (rowH + rowGap) + rowH / 2;
-    var barTop = cy - rowH / 2 + 2;
-    var barH = rowH - 4;
+    var cx = padL + (i + 0.5) * colSpacing;
+    var x = cx - barW / 2;
 
-    // Portfolio bars (right of zero)
+    // Portfolio bars (upward from zero)
     if (d.interest >= 0) {
-      var contribRight = xPos(d.contributed);
+      var contribTop = yPos(d.contributed);
       ctx.fillStyle = "#0071e3";
-      roundedRect(ctx, zeroX, barTop, contribRight - zeroX, barH, 3, "left");
+      roundedRect(ctx, x, contribTop, barW, zeroY - contribTop, 3, "bottom");
       ctx.fill();
 
-      var balRight = xPos(d.balance);
+      var balTop = yPos(d.balance);
       ctx.fillStyle = "#34c759";
-      roundedRect(ctx, contribRight, barTop, balRight - contribRight, barH, 3, "right");
+      roundedRect(ctx, x, balTop, barW, contribTop - balTop, 3, "top");
       ctx.fill();
     } else {
-      var balRight = xPos(Math.max(0, d.balance));
+      var balTop = yPos(Math.max(0, d.balance));
       ctx.fillStyle = "#0071e3";
-      roundedRect(ctx, zeroX, barTop, balRight - zeroX, barH, 3, "both");
+      roundedRect(ctx, x, balTop, barW, zeroY - balTop, 3, "both");
       ctx.fill();
     }
 
-    // Debt bar (left of zero)
+    // Debt bar (downward from zero)
     if (d.debtRemaining > 0.01) {
-      var debtLeft = xPos(-d.debtRemaining);
+      var debtBot = yPos(-d.debtRemaining);
       ctx.fillStyle = "#ff3b30";
-      roundedRect(ctx, debtLeft, barTop, zeroX - debtLeft, barH, 3, "both");
+      roundedRect(ctx, x, zeroY, barW, debtBot - zeroY, 3, "both");
       ctx.fill();
     }
-
-    // Year label
-    ctx.fillStyle = "#86868b";
-    ctx.textAlign = "right";
-    ctx.font = "11px 'JetBrains Mono', monospace";
-    ctx.fillText(d.year + "y", padL - 8, cy + 4);
-
-    // Balance label at end of bar
-    var labelX = d.interest >= 0 ? xPos(d.balance) : xPos(Math.max(0, d.balance));
-    ctx.fillStyle = "#1d1d1f";
-    ctx.textAlign = "left";
-    ctx.font = "10px 'JetBrains Mono', monospace";
-    ctx.fillText(formatCompactUSD(d.balance), labelX + 5, cy + 4);
 
     // Net worth point
     var nw = d.balance - d.debtRemaining;
-    netWorthPoints.push({ x: xPos(nw), y: cy });
+    netWorthPoints.push({ x: cx, y: yPos(nw) });
+  }
+
+  // X-axis labels
+  var labelInterval = 1;
+  var minSpacing = 36;
+  while (colSpacing * labelInterval < minSpacing) labelInterval++;
+
+  ctx.fillStyle = "#86868b";
+  ctx.font = "10px 'JetBrains Mono', monospace";
+  ctx.textAlign = "center";
+  for (var i = 0; i < n; i++) {
+    var d = filteredData[i];
+    var showLabel = (i === n - 1) || (i % labelInterval === 0);
+    if (!showLabel) continue;
+    var cx = padL + (i + 0.5) * colSpacing;
+    ctx.fillText(d.year + "y", cx, chartH - padB + 16);
   }
 
   // Net worth line
   if (netWorthPoints.length > 1) {
-    ctx.strokeStyle = "rgba(30, 30, 30, 0.7)";
+    ctx.strokeStyle = "rgba(30, 30, 30, 0.8)";
     ctx.lineWidth = 2;
     ctx.setLineDash([5, 3]);
     ctx.beginPath();
@@ -282,7 +291,6 @@ function calculate() {
     ctx.stroke();
     ctx.setLineDash([]);
 
-    // Dots
     ctx.fillStyle = "#1d1d1f";
     for (var i = 0; i < netWorthPoints.length; i++) {
       var p = netWorthPoints[i];
@@ -293,24 +301,25 @@ function calculate() {
   }
 
   function roundedRect(ctx, x, y, w, h, r, side) {
-    if (w <= 0) return;
+    if (w <= 0 || h <= 0) return;
     r = Math.min(r, w / 2, h / 2);
     ctx.beginPath();
-    if (side === "left") {
+    if (side === "top") {
       ctx.moveTo(x + r, y);
-      ctx.lineTo(x + w, y);
-      ctx.lineTo(x + w, y + h);
-      ctx.lineTo(x + r, y + h);
-      ctx.arcTo(x, y + h, x, y + h - r, r);
-      ctx.lineTo(x, y + r);
-      ctx.arcTo(x, y, x + r, y, r);
-    } else if (side === "right") {
-      ctx.moveTo(x, y);
       ctx.lineTo(x + w - r, y);
       ctx.arcTo(x + w, y, x + w, y + r, r);
+      ctx.lineTo(x + w, y + h);
+      ctx.lineTo(x, y + h);
+      ctx.lineTo(x, y + r);
+      ctx.arcTo(x, y, x + r, y, r);
+    } else if (side === "bottom") {
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + w, y);
       ctx.lineTo(x + w, y + h - r);
       ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
-      ctx.lineTo(x, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.arcTo(x, y + h, x, y + h - r, r);
+      ctx.lineTo(x, y);
     } else {
       ctx.moveTo(x + r, y);
       ctx.lineTo(x + w - r, y);
