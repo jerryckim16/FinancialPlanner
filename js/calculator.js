@@ -488,21 +488,20 @@ function calculate() {
         activePoint = closest;
         var fd = filteredData[closest.dataIdx];
         var ttBreakdown = '';
-        var parts = [];
-        if (fd.balance > 0.01) parts.push('Investments: ' + formatUSD(fd.balance));
-        if (fd.emergencyFund > 0.01) parts.push('Emergency Fund: ' + formatUSD(fd.emergencyFund));
-        if (fd.debtRemaining > 0.01) parts.push('Debt: -' + formatUSD(fd.debtRemaining));
-        if (parts.length > 0) {
+        var hasAny = fd.balance > 0.01 || fd.emergencyFund > 0.01 || fd.debtRemaining > 0.01;
+        if (hasAny) {
           ttBreakdown = '<div class="tt-breakdown">';
-          for (var pi = 0; pi < parts.length; pi++) {
-            ttBreakdown += '<div class="tt-inv">' + parts[pi] + '</div>';
-          }
-          var bd = fd.investmentBreakdown;
-          if (bd && bd.length > 1 && fd.balance > 0.01) {
-            for (var bi = 0; bi < bd.length; bi++) {
-              ttBreakdown += '<div class="tt-inv">&nbsp;&nbsp;' + escapeHtml(bd[bi].name) + ': ' + formatUSD(bd[bi].balance) + '</div>';
+          if (fd.balance > 0.01) {
+            ttBreakdown += '<div class="tt-inv">Investments: ' + formatUSD(fd.balance) + '</div>';
+            var bd = fd.investmentBreakdown;
+            if (bd && bd.length > 1) {
+              for (var bi = 0; bi < bd.length; bi++) {
+                ttBreakdown += '<div class="tt-inv">&nbsp;&nbsp;' + escapeHtml(bd[bi].name) + ': ' + formatUSD(bd[bi].balance) + '</div>';
+              }
             }
           }
+          if (fd.emergencyFund > 0.01) ttBreakdown += '<div class="tt-inv">Emergency Fund: ' + formatUSD(fd.emergencyFund) + '</div>';
+          if (fd.debtRemaining > 0.01) ttBreakdown += '<div class="tt-inv">Debt: -' + formatUSD(fd.debtRemaining) + '</div>';
           ttBreakdown += '</div>';
         }
         tooltip.innerHTML =
