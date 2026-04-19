@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>Financial Planner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css?v=10" />
+</head>
+<body>
+  <header>
+    <h1>Financial Planner</h1>
+  </header>
+
+  <div class="container">
+    <!-- Job Income -->
+    <div class="card">
+      <h2>Job Income</h2>
+      <div class="field-group three">
+        <div>
+          <label for="annualIncome">Annual Gross Income ($)</label>
+          <input type="number" id="annualIncome" value="75000" min="0" step="1000" />
+        </div>
+        <div>
+          <label for="taxRate">Effective Tax Rate (%)</label>
+          <input type="number" id="taxRate" value="22" min="0" max="60" step="0.5" />
+        </div>
+        <div>
+          <label for="incomeGrowth">Annual Raise (%)</label>
+          <input type="number" id="incomeGrowth" value="3" min="0" max="20" step="0.1" />
+        </div>
+      </div>
+      <div class="inline-summary">
+        <span class="label-text">Monthly Take-Home (Today)</span>
+        <span class="value-text" id="monthlyTakeHome">--</span>
+      </div>
+      <div class="note">Tax rate should include federal + state + FICA (~22% is typical for middle income). Annual raise grows your take-home over time (3% is a common long-run average that roughly tracks inflation).</div>
+    </div>
+
+    <!-- Costs -->
+    <div class="card">
+      <div class="card-header">
+        <h2>Costs</h2>
+        <button class="btn-primary" id="addCostBtn">+ Add Cost</button>
+      </div>
+      <div id="costsList"></div>
+      <div class="inline-summary">
+        <span class="label-text">Total Monthly Costs</span>
+        <span class="value-text" id="totalCosts">--</span>
+      </div>
+      <div class="note">Add any recurring expense. Use <strong>Frequency</strong> for costs billed annually (e.g. insurance) — the amount is spread evenly across 12 months. The <strong>annual %</strong> column applies inflation to each cost over time.</div>
+    </div>
+
+    <!-- Loans -->
+    <div class="card">
+      <div class="card-header">
+        <h2>Loans &amp; Debt</h2>
+        <button class="btn-primary" id="addLoanBtn">+ Add Loan</button>
+      </div>
+      <div id="loansList"></div>
+      <div class="inline-summary">
+        <span class="label-text">Total Debt Balance</span>
+        <span class="value-text" id="totalDebt">$0</span>
+      </div>
+      <div class="inline-summary">
+        <span class="label-text">Total Monthly Loan Payments</span>
+        <span class="value-text" id="totalLoanPayments">$0</span>
+      </div>
+      <div class="note">Payments continue until each loan is fully paid off. Once paid, that payment flows into your investments.</div>
+    </div>
+
+    <!-- Monthly Savings Summary -->
+    <div class="card">
+      <h2>Savings Capacity</h2>
+      <div class="inline-summary" id="savingsSummary">
+        <span class="label-text">Monthly Savings Today (Take-Home &minus; Costs &minus; Loan Payments)</span>
+        <span class="value-text" id="monthlySavings">--</span>
+      </div>
+      <div class="inline-summary">
+        <span class="label-text">Projected Monthly Costs at End of Period</span>
+        <span class="value-text" id="futureCosts">--</span>
+      </div>
+      <div class="warning-banner" id="savingsWarning" style="display:none;">
+        Your monthly obligations exceed your take-home income. Reduce expenses, restructure loans, or increase income.
+      </div>
+    </div>
+
+    <!-- Emergency Fund -->
+    <div class="card">
+      <h2>Emergency Fund</h2>
+      <div class="field-group">
+        <div>
+          <label for="emergencyMonths">Months of Expenses to Save</label>
+          <input type="number" id="emergencyMonths" value="6" min="0" max="24" step="1" />
+        </div>
+        <div>
+          <label for="investmentAllocation">
+            Investment Allocation: <span id="allocationLabel">80%</span>
+          </label>
+          <input type="range" id="investmentAllocation" value="80" min="0" max="100" step="5" />
+        </div>
+      </div>
+      <div class="inline-summary">
+        <span class="label-text">Emergency Fund Target</span>
+        <span class="value-text" id="emergencyTarget">--</span>
+      </div>
+      <div class="inline-summary">
+        <span class="label-text">Fund Fully Funded</span>
+        <span class="value-text" id="emergencyFundedMonth">--</span>
+      </div>
+      <div class="inline-summary">
+        <span class="label-text">Emergency Fund Balance (End of Period)</span>
+        <span class="value-text" id="emergencyBalance">--</span>
+      </div>
+      <div class="note">Available savings split between investments and emergency fund. Once the fund reaches its target, 100% flows to investments.</div>
+    </div>
+
+    <!-- Investment Settings -->
+    <div class="card">
+      <h2>Investment Settings</h2>
+      <div class="field-group three">
+        <div>
+          <label for="principal">Initial Investment ($)</label>
+          <input type="number" id="principal" value="10000" min="0" step="100" />
+        </div>
+        <div>
+          <label for="rate">Annual Return Rate (%)</label>
+          <input type="number" id="rate" value="7" min="-50" max="100" step="0.5" />
+        </div>
+        <div>
+          <label for="years">Investment Period (years)</label>
+          <input type="number" id="years" value="30" min="1" max="80" step="1" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="card">
+      <h2>Results</h2>
+      <div class="results">
+        <div class="stat-card highlight">
+          <div class="stat-label">Total Value</div>
+          <div class="stat-value" id="totalValue">--</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Interest Earned</div>
+          <div class="stat-value" id="totalInterest">--</div>
+          <div class="stat-sub" id="interestPct"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Contributions</div>
+          <div class="stat-value" id="totalContrib">--</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Debt-Free In</div>
+          <div class="stat-value" id="debtFree">--</div>
+          <div class="stat-sub" id="debtInterestPaid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Year-by-year chart -->
+    <div class="card">
+      <h2>Growth Over Time</h2>
+      <div class="legend">
+        <span class="leg-principal">Contributions</span>
+        <span class="leg-interest">Interest</span>
+        <span class="leg-debt">Remaining Debt</span>
+        <span class="leg-networth">Net Worth</span>
+      </div>
+      <div class="bar-chart" id="barChart"></div>
+    </div>
+  </div>
+
+  <script src="js/helpers.js?v=10"></script>
+  <script src="js/costs.js?v=10"></script>
+  <script src="js/loans.js?v=10"></script>
+  <script src="js/calculator.js?v=10"></script>
+  <script src="js/app.js?v=10"></script>
+</body>
+</html>

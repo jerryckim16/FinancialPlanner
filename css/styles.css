@@ -1,0 +1,491 @@
+/* ==========================================================================
+   Financial Planner – Styles
+   ========================================================================== */
+
+/* --- Reset & Base --- */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #f5f5f7;
+  color: #1d1d1f;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* --- Header --- */
+
+header {
+  background: #fff;
+  border-bottom: 1px solid #e8e8ed;
+  padding: 20px 24px;
+}
+
+header h1 {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #1d1d1f;
+}
+
+/* --- Layout --- */
+
+.container {
+  max-width: 720px;
+  margin: 32px auto;
+  padding: 0 16px;
+}
+
+/* --- Cards --- */
+
+.card {
+  background: #fff;
+  border: 1px solid #f0f0f0;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.card h2 {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #86868b;
+  margin-bottom: 16px;
+  padding-left: 10px;
+  border-left: 3px solid #0071e3;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.card-header h2 { margin-bottom: 0; }
+
+/* --- Form Fields --- */
+
+.field-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.field-group.full { grid-template-columns: 1fr; }
+.field-group.three { grid-template-columns: 1fr 1fr 1fr; }
+
+label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: #86868b;
+  margin-bottom: 4px;
+}
+
+input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d2d2d7;
+  border-radius: 8px;
+  font-size: 15px;
+  font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Consolas", monospace;
+  background: #fafafa;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+input[type="text"] {
+  font-family: inherit;
+}
+
+input:focus {
+  outline: none;
+  background: #fff;
+  border-color: #0071e3;
+  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.12);
+}
+
+/* --- Range Slider --- */
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  background: #d2d2d7;
+  border: none;
+  border-radius: 3px;
+  outline: none;
+  margin-top: 8px;
+  padding: 0;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #0071e3;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  transition: background 0.15s;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  background: #005bb5;
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #0071e3;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+input[type="range"]::-moz-range-track {
+  height: 6px;
+  background: #d2d2d7;
+  border-radius: 3px;
+}
+
+input[type="range"]:focus {
+  box-shadow: none;
+}
+
+/* --- Buttons --- */
+
+button {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 7px 14px;
+  transition: all 0.15s;
+}
+
+.btn-primary {
+  background: #0071e3;
+  color: #fff;
+}
+.btn-primary:hover { background: #005bb5; }
+
+.btn-ghost {
+  background: transparent;
+  color: #86868b;
+  border-color: transparent;
+  padding: 4px 8px;
+  font-size: 12px;
+}
+.btn-ghost:hover { color: #d70015; }
+
+/* --- Cost Rows --- */
+
+.cost-row {
+  display: grid;
+  grid-template-columns: 1.8fr 1fr 1fr 0.9fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 12px;
+  background: #fafafa;
+  border: 1px solid #e8e8ed;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.cost-row:hover {
+  border-color: #c0c0c7;
+  background: #f8f8fa;
+}
+
+.cost-row input { background: #fff; }
+
+.cost-row select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #d2d2d7;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'><path fill='%2386868b' d='M2 4l4 4 4-4'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 12px;
+  padding-right: 26px;
+}
+
+.cost-row select:focus {
+  outline: none;
+  border-color: #0071e3;
+  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.12);
+}
+
+/* Column header row above the cost list */
+.cost-row.cost-header {
+  background: transparent;
+  border: none;
+  padding: 0 12px;
+  margin-bottom: 4px;
+}
+
+.cost-row.cost-header:hover {
+  background: transparent;
+  border-color: transparent;
+}
+
+.cost-row.cost-header span {
+  font-size: 10px;
+  font-weight: 500;
+  color: #86868b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.cost-row .dollar-prefix,
+.cost-row .percent-suffix {
+  position: relative;
+}
+
+.cost-row .dollar-prefix::before {
+  content: "$";
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #86868b;
+  font-size: 14px;
+  font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Consolas", monospace;
+  pointer-events: none;
+}
+
+.cost-row .percent-suffix::after {
+  content: "%";
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #86868b;
+  font-size: 14px;
+  font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Consolas", monospace;
+  pointer-events: none;
+}
+
+.cost-row .dollar-prefix input {
+  padding-left: 24px;
+}
+
+.cost-row .percent-suffix input {
+  padding-right: 26px;
+  /* Hide native number spinners for the tight inflation input */
+  -moz-appearance: textfield;
+}
+
+.cost-row .percent-suffix input::-webkit-outer-spin-button,
+.cost-row .percent-suffix input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* --- Loan Rows --- */
+
+.loan-row {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 0.8fr 1fr auto;
+  gap: 10px;
+  align-items: end;
+  padding: 12px;
+  background: #fafafa;
+  border: 1px solid #e8e8ed;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.loan-row:hover {
+  border-color: #c0c0c7;
+  background: #f8f8fa;
+}
+
+.loan-row input { background: #fff; }
+
+.loan-meta {
+  grid-column: 1 / -1;
+  font-size: 11px;
+  color: #86868b;
+  font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Consolas", monospace;
+  padding-top: 6px;
+  border-top: 1px dashed #e0e0e0;
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.loan-meta span { white-space: nowrap; }
+.loan-meta .warn { color: #d70015; }
+
+/* --- Empty State --- */
+
+.empty-state {
+  text-align: center;
+  padding: 20px;
+  color: #86868b;
+  font-size: 13px;
+}
+
+/* --- Inline Summary --- */
+
+.inline-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  background: #f5f5f7;
+  border-radius: 8px;
+  margin-top: 12px;
+  font-size: 13px;
+}
+
+.inline-summary .label-text {
+  color: #86868b;
+  font-weight: 500;
+}
+
+.inline-summary .value-text {
+  font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Consolas", monospace;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.inline-summary.positive .value-text { color: #0a8a2a; }
+.inline-summary.negative .value-text { color: #d70015; }
+
+/* --- Results / Stat Cards --- */
+
+.results {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.stat-card {
+  background: #f5f5f7;
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.stat-card.highlight {
+  background: linear-gradient(135deg, #0071e3 0%, #005bb5 100%);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 113, 227, 0.25);
+}
+
+.stat-label {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.7;
+  margin-bottom: 4px;
+}
+
+.stat-value {
+  font-size: 22px;
+  font-weight: 700;
+  font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Consolas", monospace;
+}
+
+.stat-sub {
+  font-size: 11px;
+  opacity: 0.6;
+  margin-top: 2px;
+}
+
+/* --- Bar Chart --- */
+
+.bar-chart {
+  margin-top: 8px;
+}
+
+.bar-chart canvas {
+  display: block;
+  width: 100%;
+}
+
+/* --- Legend --- */
+
+.legend {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 12px;
+  font-size: 12px;
+  color: #86868b;
+  flex-wrap: wrap;
+}
+
+.legend span::before {
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.legend .leg-principal::before { background: #0071e3; }
+.legend .leg-interest::before { background: #34c759; }
+.legend .leg-debt::before { background: #ff3b30; }
+.legend .leg-networth::before {
+  background: transparent;
+  width: 16px;
+  height: 2px;
+  border-top: 2px dashed #1d1d1f;
+  border-radius: 0;
+  vertical-align: middle;
+}
+
+/* --- Utility --- */
+
+.note {
+  font-size: 11px;
+  color: #86868b;
+  margin-top: 8px;
+}
+
+.warning-banner {
+  background: #fff4e5;
+  border: 1px solid #ffcc80;
+  color: #995c00;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-top: 12px;
+  font-size: 13px;
+}
+
+/* --- Responsive --- */
+
+@media (max-width: 500px) {
+  .field-group, .field-group.three { grid-template-columns: 1fr; }
+  .results { grid-template-columns: 1fr; }
+  .loan-row { grid-template-columns: 1fr 1fr; }
+  .cost-row { grid-template-columns: 1fr 1fr; }
+  .cost-row.cost-header { display: none; }
+}
