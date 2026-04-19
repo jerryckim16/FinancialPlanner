@@ -509,7 +509,6 @@ function calculate() {
           '<div class="tt-year">Year ' + closest.year + '</div>' +
           '<div class="tt-value">' + formatUSD(closest.value) + '</div>' +
           '<div class="tt-label">Net Worth</div>' + ttBreakdown;
-        redrawHighlight(closest);
       }
       tooltip.style.left = closest.x + "px";
       tooltip.style.top = (closest.y - 12) + "px";
@@ -519,7 +518,6 @@ function calculate() {
       activePoint = null;
       tooltip.classList.remove("visible");
       canvas.style.cursor = "default";
-      redrawHighlight(null);
     }
   });
 
@@ -527,28 +525,7 @@ function calculate() {
     activePoint = null;
     tooltip.classList.remove("visible");
     canvas.style.cursor = "default";
-    redrawHighlight(null);
   });
-
-  function redrawHighlight(point) {
-    // Redraw all dots, enlarging the hovered one
-    ctx.fillStyle = "#1d1d1f";
-    for (var i = 0; i < netWorthPoints.length; i++) {
-      var p = netWorthPoints[i];
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    if (point) {
-      ctx.fillStyle = "#fff";
-      ctx.strokeStyle = "#1d1d1f";
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.arc(point.x, point.y, 5, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
-    }
-  }
 
   function roundedRect(ctx, x, y, w, h, r, side) {
     if (w <= 0 || h <= 0) return;
