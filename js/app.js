@@ -10,13 +10,20 @@ document.getElementById("addCostBtn").addEventListener("click", function () {
   calculate();
 });
 
+document.getElementById("addInvestmentBtn").addEventListener("click", function () {
+  investments.push({ name: "Investment " + (++investmentIdCounter), rate: 7, allocation: 0 });
+  renderInvestments();
+  calculate();
+});
+
 // Initial render
 renderCosts();
 renderLoans();
+renderInvestments();
 
 // Planner inputs
 document.querySelectorAll("#tab-planner input").forEach(function (el) {
-  if (el.closest("#costsList") || el.closest("#loansList")) return;
+  if (el.closest("#costsList") || el.closest("#loansList") || el.closest("#investmentsList")) return;
   el.addEventListener("input", calculate);
 });
 

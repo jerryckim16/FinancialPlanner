@@ -42,10 +42,14 @@ function calculate() {
 
   // Investment simulation — monthly, with loans paying down over time
   var principal = num("principal");
-  var annualRate = num("rate");
   var years = Math.max(1, parseInt(document.getElementById("years").value) || 1);
-  var monthlyRate = annualRate / 100 / 12;
   var months = years * 12;
+
+  var allocations = getNormalizedAllocations();
+  var invCount = investments.length;
+  var monthlyRates = investments.map(function (inv) {
+    return (inv.rate || 0) / 100 / 12;
+  });
 
   // Clone loan state for simulation
   var loanState = loans.map(function (l) {
@@ -64,6 +68,13 @@ function calculate() {
     };
   });
 
+  var invBalances = [];
+  var invContributions = [];
+  for (var k = 0; k < invCount; k++) {
+    var initBal = principal * allocations[k];
+    invBalances.push(initBal);
+    invContributions.push(initBal);
+  }
   var investment = principal;
   var totalContributions = principal;
   var totalInterestPaidOnDebt = 0;
@@ -122,8 +133,17 @@ function calculate() {
       }
     }
 
-    // Grow investment (emergency fund earns no interest)
-    investment = investment * (1 + monthlyRate) + investContrib;
+    // Grow each investment independently
+    if (invCount > 0) {
+      for (var k = 0; k < invCount; k++) {
+        var thisContrib = investContrib * allocations[k];
+        invBalances[k] = invBalances[k] * (1 + monthlyRates[k]) + thisContrib;
+        invContributions[k] += thisContrib;
+      }
+      investment = invBalances.reduce(function (s, b) { return s + b; }, 0);
+    } else {
+      investment += investContrib;
+    }
     totalContributions += investContrib;
 
     // Grow take-home and inflate costs for the next month
@@ -141,7 +161,15 @@ function calculate() {
         interest: investment - totalContributions,
         debtRemaining: totalDebtRemaining,
         monthlyCosts: thisMonthCosts,
-        emergencyFund: emergencyFund
+        emergencyFund: emergencyFund,
+        investmentBreakdown: investments.map(function (inv, idx) {
+          return {
+            name: inv.name,
+            balance: invBalances[idx],
+            contributed: invContributions[idx],
+            interest: invBalances[idx] - invContributions[idx]
+          };
+        })
       });
     }
   }
@@ -178,6 +206,28 @@ function calculate() {
     document.getElementById("emergencyFundedMonth").textContent = formatMonths(emergencyFundedMonth);
   } else {
     document.getElementById("emergencyFundedMonth").textContent = "Not within " + years + "y";
+  }
+
+  // Per-investment breakdown table
+  var breakdownContainer = document.getElementById("investmentBreakdown");
+  if (last.investmentBreakdown && last.investmentBreakdown.length > 1) {
+    var bHtml = '<div class="breakdown-header">Investment Breakdown</div>';
+    bHtml += '<div class="breakdown-table">';
+    bHtml += '<div class="breakdown-row breakdown-row-header">' +
+      '<span>Investment</span><span>Balance</span><span>Contributed</span><span>Interest</span></div>';
+    for (var bi = 0; bi < last.investmentBreakdown.length; bi++) {
+      var bInv = last.investmentBreakdown[bi];
+      bHtml += '<div class="breakdown-row">' +
+        '<span>' + escapeHtml(bInv.name) + '</span>' +
+        '<span>' + formatUSD(bInv.balance) + '</span>' +
+        '<span>' + formatUSD(bInv.contributed) + '</span>' +
+        '<span>' + formatUSD(bInv.interest) + '</span>' +
+        '</div>';
+    }
+    bHtml += '</div>';
+    breakdownContainer.innerHTML = bHtml;
+  } else {
+    breakdownContainer.innerHTML = '';
   }
 
   // Vertical bar chart with canvas
@@ -299,7 +349,7 @@ function calculate() {
 
     // Net worth point
     var nw = d.balance + d.emergencyFund - d.debtRemaining;
-    netWorthPoints.push({ x: cx, y: yPos(nw), value: nw, year: d.year });
+    netWorthPoints.push({ x: cx, y: yPos(nw), value: nw, year: d.year, dataIdx: i });
   }
 
   // X-axis labels
@@ -364,10 +414,19 @@ function calculate() {
     if (closest) {
       if (activePoint !== closest) {
         activePoint = closest;
+        var ttBreakdown = '';
+        var bd = filteredData[closest.dataIdx].investmentBreakdown;
+        if (bd && bd.length > 1) {
+          ttBreakdown = '<div class="tt-breakdown">';
+          for (var bi = 0; bi < bd.length; bi++) {
+            ttBreakdown += '<div class="tt-inv">' + escapeHtml(bd[bi].name) + ': ' + formatUSD(bd[bi].balance) + '</div>';
+          }
+          ttBreakdown += '</div>';
+        }
         tooltip.innerHTML =
           '<div class="tt-year">Year ' + closest.year + '</div>' +
           '<div class="tt-value">' + formatUSD(closest.value) + '</div>' +
-          '<div class="tt-label">Net Worth</div>';
+          '<div class="tt-label">Net Worth</div>' + ttBreakdown;
         redrawHighlight(closest);
       }
       tooltip.style.left = closest.x + "px";

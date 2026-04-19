@@ -378,6 +378,134 @@ button {
   margin: 0;
 }
 
+/* --- Investment Rows --- */
+
+.investment-row {
+  display: grid;
+  grid-template-columns: 1.8fr 1fr 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 12px;
+  background: #fafafa;
+  border: 1px solid #e8e8ed;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.investment-row:hover {
+  border-color: #c0c0c7;
+  background: #f8f8fa;
+}
+
+.investment-row input { background: #fff; }
+
+.investment-row.investment-header {
+  background: transparent;
+  border: none;
+  padding: 0 12px;
+  margin-bottom: 4px;
+}
+
+.investment-row.investment-header:hover {
+  background: transparent;
+  border-color: transparent;
+}
+
+.investment-row.investment-header span {
+  font-size: 10px;
+  font-weight: 500;
+  color: #86868b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.investment-row .percent-suffix {
+  position: relative;
+}
+
+.investment-row .percent-suffix::after {
+  content: "%";
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #86868b;
+  font-size: 14px;
+  font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Consolas", monospace;
+  pointer-events: none;
+}
+
+.investment-row .percent-suffix input {
+  padding-right: 26px;
+  -moz-appearance: textfield;
+}
+
+.investment-row .percent-suffix input::-webkit-outer-spin-button,
+.investment-row .percent-suffix input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* --- Allocation Indicator --- */
+
+.allocation-indicator {
+  padding: 8px 14px;
+  border-radius: 8px;
+  margin-top: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Consolas", monospace;
+}
+
+.allocation-indicator.valid {
+  background: #e8f8ed;
+  color: #0a8a2a;
+}
+
+.allocation-indicator.warning {
+  background: #fff8e5;
+  color: #995c00;
+}
+
+/* --- Investment Breakdown --- */
+
+.breakdown-header {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #86868b;
+  margin-bottom: 8px;
+}
+
+.breakdown-table {
+  background: #f5f5f7;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.breakdown-row {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr;
+  gap: 8px;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Consolas", monospace;
+  border-bottom: 1px solid #eee;
+}
+
+.breakdown-row:last-child { border-bottom: none; }
+
+.breakdown-row-header {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-weight: 500;
+  color: #86868b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 10px;
+}
+
 /* --- Loan Rows --- */
 
 .loan-row {
@@ -555,6 +683,17 @@ button {
   margin-top: 1px;
 }
 
+.chart-tooltip .tt-breakdown {
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.chart-tooltip .tt-inv {
+  font-size: 10px;
+  color: #a0a0a7;
+}
+
 /* --- Legend --- */
 
 .legend {
@@ -617,4 +756,7 @@ button {
   .loan-row { grid-template-columns: 1fr 1fr; }
   .cost-row { grid-template-columns: 1fr 1fr; }
   .cost-row.cost-header { display: none; }
+  .investment-row { grid-template-columns: 1fr 1fr; }
+  .investment-row.investment-header { display: none; }
+  .breakdown-row { grid-template-columns: 1fr 1fr; }
 }
