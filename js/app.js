@@ -29,6 +29,20 @@ document.querySelectorAll("#tab-opportunity input, #tab-opportunity select").for
   el.addEventListener("input", calculateOpportunity);
 });
 
+// Opportunity cost spending-type toggle
+document.querySelectorAll("#ocSpendingType .seg-btn").forEach(function (btn) {
+  btn.addEventListener("click", function () {
+    document.querySelectorAll("#ocSpendingType .seg-btn").forEach(function (b) {
+      b.classList.remove("active");
+    });
+    btn.classList.add("active");
+    var type = btn.getAttribute("data-type");
+    document.getElementById("ocFrequencyRow").style.display =
+      type === "recurring" ? "block" : "none";
+    calculateOpportunity();
+  });
+});
+
 // Tab switching
 document.querySelectorAll(".tab-btn").forEach(function (btn) {
   btn.addEventListener("click", function () {

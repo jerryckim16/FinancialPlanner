@@ -1,12 +1,21 @@
 function calculateOpportunity() {
-  var oneTime = num("ocOneTime");
-  var recurring = parseFloat(document.getElementById("ocRecurring").value) || 0;
+  var amount = num("ocAmount");
+  var activeSeg = document.querySelector("#ocSpendingType .seg-btn.active");
+  var spendingType = activeSeg ? activeSeg.getAttribute("data-type") : "onetime";
   var frequency = document.getElementById("ocFrequency").value;
   var annualRate = num("ocRate");
   var years = Math.max(1, parseInt(document.getElementById("ocYears").value) || 1);
 
   var monthlyRate = annualRate / 100 / 12;
   var months = years * 12;
+
+  var oneTime = 0;
+  var recurring = 0;
+  if (spendingType === "recurring") {
+    recurring = amount;
+  } else {
+    oneTime = amount;
+  }
 
   // Convert recurring to monthly
   var monthlyRecurring = 0;

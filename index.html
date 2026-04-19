@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css?v=12" />
+  <link rel="stylesheet" href="css/styles.css?v=13" />
 </head>
 <body>
   <header>
@@ -186,30 +186,28 @@
     <!-- Spending -->
     <div class="card">
       <h2>What Are You Spending?</h2>
-      <div class="field-group">
+      <div class="segmented-control" id="ocSpendingType">
+        <button type="button" class="seg-btn active" data-type="onetime">One-Time Purchase</button>
+        <button type="button" class="seg-btn" data-type="recurring">Recurring Expense</button>
+      </div>
+      <div class="field-group" style="margin-top: 16px;">
         <div>
-          <label for="ocOneTime">One-Time Purchase ($)</label>
-          <input type="number" id="ocOneTime" value="1000" min="0" step="100" />
+          <label for="ocAmount">Amount ($)</label>
+          <input type="number" id="ocAmount" value="1000" min="0" step="1" />
         </div>
         <div>
           <label for="ocName">Item Name (optional)</label>
           <input type="text" id="ocName" value="" placeholder="e.g. New Phone" />
         </div>
       </div>
-      <div class="field-group" style="margin-top: 16px;">
-        <div>
-          <label for="ocRecurring">Recurring Expense ($)</label>
-          <input type="number" id="ocRecurring" value="0" min="0" step="1" />
-        </div>
-        <div>
-          <label for="ocFrequency">Frequency</label>
-          <select id="ocFrequency">
-            <option value="daily">Daily</option>
-            <option value="weekly">Weekly</option>
-            <option value="monthly" selected>Monthly</option>
-            <option value="annual">Annual</option>
-          </select>
-        </div>
+      <div id="ocFrequencyRow" style="display: none; margin-top: 16px;">
+        <label for="ocFrequency">Frequency</label>
+        <select id="ocFrequency" style="max-width: 220px;">
+          <option value="daily">Daily</option>
+          <option value="weekly">Weekly</option>
+          <option value="monthly" selected>Monthly</option>
+          <option value="annual">Annual</option>
+        </select>
       </div>
     </div>
 
@@ -267,11 +265,11 @@
 
   </div>
 
-  <script src="js/helpers.js?v=12"></script>
-  <script src="js/costs.js?v=12"></script>
-  <script src="js/loans.js?v=12"></script>
-  <script src="js/calculator.js?v=12"></script>
-  <script src="js/opportunity.js?v=12"></script>
-  <script src="js/app.js?v=12"></script>
+  <script src="js/helpers.js?v=13"></script>
+  <script src="js/costs.js?v=13"></script>
+  <script src="js/loans.js?v=13"></script>
+  <script src="js/calculator.js?v=13"></script>
+  <script src="js/opportunity.js?v=13"></script>
+  <script src="js/app.js?v=13"></script>
 </body>
 </html>
