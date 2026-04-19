@@ -84,7 +84,7 @@ function calculate() {
   var emergencyFundedMonth = null;
   var deficitDebt = 0;
   var deficitEverOccurred = false;
-  var DEFICIT_APR = 0.20;
+  var DEFICIT_APR = num("deficitAPR") / 100;
   var deficitMonthlyRate = DEFICIT_APR / 12;
 
   var currentTakeHome = monthlyTakeHome;
