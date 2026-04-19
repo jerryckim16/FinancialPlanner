@@ -19,4 +19,8 @@ document.querySelectorAll(".card input").forEach(function (el) {
   el.addEventListener("input", calculate);
 });
 
+document.getElementById("investmentAllocation").addEventListener("input", function () {
+  document.getElementById("allocationLabel").textContent = this.value + "%";
+});
+
 calculate();

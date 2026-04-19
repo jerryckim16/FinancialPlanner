@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css?v=8" />
+  <link rel="stylesheet" href="css/styles.css?v=9" />
 </head>
 <body>
   <header>
@@ -90,6 +90,36 @@
       </div>
     </div>
 
+    <!-- Emergency Fund -->
+    <div class="card">
+      <h2>Emergency Fund</h2>
+      <div class="field-group">
+        <div>
+          <label for="emergencyMonths">Months of Expenses to Save</label>
+          <input type="number" id="emergencyMonths" value="6" min="0" max="24" step="1" />
+        </div>
+        <div>
+          <label for="investmentAllocation">
+            Investment Allocation: <span id="allocationLabel">80%</span>
+          </label>
+          <input type="range" id="investmentAllocation" value="80" min="0" max="100" step="5" />
+        </div>
+      </div>
+      <div class="inline-summary">
+        <span class="label-text">Emergency Fund Target</span>
+        <span class="value-text" id="emergencyTarget">--</span>
+      </div>
+      <div class="inline-summary">
+        <span class="label-text">Fund Fully Funded</span>
+        <span class="value-text" id="emergencyFundedMonth">--</span>
+      </div>
+      <div class="inline-summary">
+        <span class="label-text">Emergency Fund Balance (End of Period)</span>
+        <span class="value-text" id="emergencyBalance">--</span>
+      </div>
+      <div class="note">Available savings split between investments and emergency fund. Once the fund reaches its target, 100% flows to investments.</div>
+    </div>
+
     <!-- Investment Settings -->
     <div class="card">
       <h2>Investment Settings</h2>
@@ -147,10 +177,10 @@
     </div>
   </div>
 
-  <script src="js/helpers.js?v=8"></script>
-  <script src="js/costs.js?v=8"></script>
-  <script src="js/loans.js?v=8"></script>
-  <script src="js/calculator.js?v=8"></script>
-  <script src="js/app.js?v=8"></script>
+  <script src="js/helpers.js?v=9"></script>
+  <script src="js/costs.js?v=9"></script>
+  <script src="js/loans.js?v=9"></script>
+  <script src="js/calculator.js?v=9"></script>
+  <script src="js/app.js?v=9"></script>
 </body>
 </html>

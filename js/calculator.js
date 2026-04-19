@@ -31,6 +31,12 @@ function calculate() {
     warning.style.display = "block";
   }
 
+  // Emergency fund inputs
+  var emergencyMonths = num("emergencyMonths");
+  var investmentAllocationPct = num("investmentAllocation") / 100;
+  var emergencyTarget = totalCosts * emergencyMonths;
+  document.getElementById("emergencyTarget").textContent = formatUSD(emergencyTarget);
+
   // Investment simulation — monthly, with loans paying down over time
   var principal = num("principal");
   var annualRate = num("rate");
@@ -44,7 +50,6 @@ function calculate() {
   });
 
   // Clone cost state with a per-cost monthly inflation factor.
-  // annualInflation% compounded over 12 months equals (1 + annualInflation/100) per year.
   var costState = costs.map(function (c) {
     var annualInflation = c.inflation || 0;
     return {
@@ -58,6 +63,8 @@ function calculate() {
   var totalInterestPaidOnDebt = 0;
   var debtFreeMonth = null;
   var hadDebt = loanState.some(function (l) { return l.balance > 0; });
+  var emergencyFund = 0;
+  var emergencyFundedMonth = null;
 
   var currentTakeHome = monthlyTakeHome;
   var data = [];
@@ -81,18 +88,37 @@ function calculate() {
       debtFreeMonth = m;
     }
 
-    // This month's total costs (inflation compounds after each month, so month 1 uses starting values)
+    // This month's total costs
     var thisMonthCosts = 0;
     for (var ci = 0; ci < costState.length; ci++) {
       thisMonthCosts += costState[ci].amount;
     }
 
-    // Monthly contribution = take-home - costs - loan payments (clamped to 0)
-    var contribution = Math.max(0, currentTakeHome - thisMonthCosts - loanPaidThisMonth);
+    // Available savings this month
+    var available = Math.max(0, currentTakeHome - thisMonthCosts - loanPaidThisMonth);
 
-    // Grow investment
-    investment = investment * (1 + monthlyRate) + contribution;
-    totalContributions += contribution;
+    // Split between investment and emergency fund
+    var investContrib, emergencyContrib;
+    if (emergencyFund >= emergencyTarget || emergencyTarget <= 0) {
+      investContrib = available;
+      emergencyContrib = 0;
+    } else {
+      investContrib = available * investmentAllocationPct;
+      emergencyContrib = available * (1 - investmentAllocationPct);
+      var fundGap = emergencyTarget - emergencyFund;
+      if (emergencyContrib > fundGap) {
+        investContrib += (emergencyContrib - fundGap);
+        emergencyContrib = fundGap;
+      }
+      emergencyFund += emergencyContrib;
+      if (emergencyFund >= emergencyTarget && emergencyFundedMonth === null) {
+        emergencyFundedMonth = m;
+      }
+    }
+
+    // Grow investment (emergency fund earns no interest)
+    investment = investment * (1 + monthlyRate) + investContrib;
+    totalContributions += investContrib;
 
     // Grow take-home and inflate costs for the next month
     currentTakeHome *= incomeMonthlyFactor;
@@ -108,7 +134,8 @@ function calculate() {
         contributed: totalContributions,
         interest: investment - totalContributions,
         debtRemaining: totalDebtRemaining,
-        monthlyCosts: thisMonthCosts
+        monthlyCosts: thisMonthCosts,
+        emergencyFund: emergencyFund
       });
     }
   }
@@ -135,6 +162,16 @@ function calculate() {
     document.getElementById("debtFree").textContent = "Not within " + years + "y";
     document.getElementById("debtInterestPaid").textContent =
       formatUSD(totalInterestPaidOnDebt) + " interest paid so far";
+  }
+
+  // Emergency fund display
+  document.getElementById("emergencyBalance").textContent = formatUSD(emergencyFund);
+  if (emergencyTarget <= 0) {
+    document.getElementById("emergencyFundedMonth").textContent = "No target set";
+  } else if (emergencyFundedMonth !== null) {
+    document.getElementById("emergencyFundedMonth").textContent = formatMonths(emergencyFundedMonth);
+  } else {
+    document.getElementById("emergencyFundedMonth").textContent = "Not within " + years + "y";
   }
 
   // Vertical bar chart with canvas
@@ -255,7 +292,7 @@ function calculate() {
     }
 
     // Net worth point
-    var nw = d.balance - d.debtRemaining;
+    var nw = d.balance + d.emergencyFund - d.debtRemaining;
     netWorthPoints.push({ x: cx, y: yPos(nw) });
   }
 
