@@ -82,6 +82,10 @@ function calculate() {
   var hadDebt = loanState.some(function (l) { return l.balance > 0; });
   var emergencyFund = 0;
   var emergencyFundedMonth = null;
+  var deficitDebt = 0;
+  var deficitEverOccurred = false;
+  var DEFICIT_APR = 0.20;
+  var deficitMonthlyRate = DEFICIT_APR / 12;
 
   var currentTakeHome = monthlyTakeHome;
   var data = [];
@@ -99,41 +103,75 @@ function calculate() {
       totalInterestPaidOnDebt += interestCharged;
     }
 
-    // Check debt-free transition
-    var totalDebtRemaining = loanState.reduce(function (s, L) { return s + L.balance; }, 0);
-    if (hadDebt && debtFreeMonth === null && totalDebtRemaining <= 0.01) {
-      debtFreeMonth = m;
-    }
-
     // This month's total costs
     var thisMonthCosts = 0;
     for (var ci = 0; ci < costState.length; ci++) {
       thisMonthCosts += costState[ci].amount;
     }
 
-    // Available savings this month
-    var available = Math.max(0, currentTakeHome - thisMonthCosts - loanPaidThisMonth);
+    // Cash flow this month
+    var netCashflow = currentTakeHome - thisMonthCosts - loanPaidThisMonth;
+    var investContrib = 0;
+    var emergencyContrib = 0;
 
-    // Split between investment and emergency fund
-    var investContrib, emergencyContrib;
-    if (emergencyFund >= emergencyTarget || emergencyTarget <= 0) {
-      investContrib = available;
-      emergencyContrib = 0;
-    } else {
-      investContrib = available * investmentAllocationPct;
-      emergencyContrib = available * (1 - investmentAllocationPct);
-      var fundGap = emergencyTarget - emergencyFund;
-      if (emergencyContrib > fundGap) {
-        investContrib += (emergencyContrib - fundGap);
-        emergencyContrib = fundGap;
+    if (netCashflow >= 0) {
+      // SURPLUS: pay down any accrued deficit debt first, then save/invest
+      var surplus = netCashflow;
+      if (deficitDebt > 0) {
+        var payoff = Math.min(deficitDebt, surplus);
+        deficitDebt -= payoff;
+        surplus -= payoff;
       }
-      emergencyFund += emergencyContrib;
-      if (emergencyFund >= emergencyTarget && emergencyFundedMonth === null) {
-        emergencyFundedMonth = m;
+
+      // Split remaining between investment and emergency fund
+      if (emergencyFund >= emergencyTarget || emergencyTarget <= 0) {
+        investContrib = surplus;
+      } else {
+        investContrib = surplus * investmentAllocationPct;
+        emergencyContrib = surplus * (1 - investmentAllocationPct);
+        var fundGap = emergencyTarget - emergencyFund;
+        if (emergencyContrib > fundGap) {
+          investContrib += (emergencyContrib - fundGap);
+          emergencyContrib = fundGap;
+        }
+        emergencyFund += emergencyContrib;
+        if (emergencyFund >= emergencyTarget && emergencyFundedMonth === null) {
+          emergencyFundedMonth = m;
+        }
+      }
+    } else {
+      // DEFICIT: draw from emergency fund → investments → new debt
+      deficitEverOccurred = true;
+      var deficit = -netCashflow;
+
+      var fromEmergency = Math.min(emergencyFund, deficit);
+      emergencyFund -= fromEmergency;
+      deficit -= fromEmergency;
+
+      if (deficit > 0) {
+        if (invCount > 0) {
+          var totalInv = invBalances.reduce(function (s, b) { return s + b; }, 0);
+          if (totalInv > 0) {
+            var fromInv = Math.min(totalInv, deficit);
+            var ratio = fromInv / totalInv;
+            for (var kk = 0; kk < invCount; kk++) {
+              invBalances[kk] *= (1 - ratio);
+            }
+            deficit -= fromInv;
+          }
+        } else if (investment > 0) {
+          var fromInv = Math.min(investment, deficit);
+          investment -= fromInv;
+          deficit -= fromInv;
+        }
+      }
+
+      if (deficit > 0) {
+        deficitDebt += deficit;
       }
     }
 
-    // Grow each investment independently
+    // Grow each investment independently (applies regardless of surplus/deficit)
     if (invCount > 0) {
       for (var k = 0; k < invCount; k++) {
         var thisContrib = investContrib * allocations[k];
@@ -145,6 +183,19 @@ function calculate() {
       investment += investContrib;
     }
     totalContributions += investContrib;
+
+    // Accrue interest on any deficit debt
+    if (deficitDebt > 0) {
+      var deficitInterest = deficitDebt * deficitMonthlyRate;
+      deficitDebt += deficitInterest;
+      totalInterestPaidOnDebt += deficitInterest;
+    }
+
+    // Combined debt remaining (loans + accrued deficit)
+    var totalDebtRemaining = loanState.reduce(function (s, L) { return s + L.balance; }, 0) + deficitDebt;
+    if (hadDebt && debtFreeMonth === null && totalDebtRemaining <= 0.01) {
+      debtFreeMonth = m;
+    }
 
     // Grow take-home and inflate costs for the next month
     currentTakeHome *= incomeMonthlyFactor;
@@ -162,6 +213,7 @@ function calculate() {
         debtRemaining: totalDebtRemaining,
         monthlyCosts: thisMonthCosts,
         emergencyFund: emergencyFund,
+        deficitDebt: deficitDebt,
         investmentBreakdown: investments.map(function (inv, idx) {
           return {
             name: inv.name,
@@ -185,9 +237,16 @@ function calculate() {
       : "";
 
   // Debt-free display
-  if (!hadDebt) {
+  var finalDeficitDebt = last.deficitDebt || 0;
+  if (!hadDebt && finalDeficitDebt <= 0.01) {
     document.getElementById("debtFree").textContent = "No debt";
-    document.getElementById("debtInterestPaid").textContent = "";
+    document.getElementById("debtInterestPaid").textContent = deficitEverOccurred
+      ? "Deficit recovered within period"
+      : "";
+  } else if (finalDeficitDebt > 0.01) {
+    document.getElementById("debtFree").textContent = "In deficit";
+    document.getElementById("debtInterestPaid").textContent =
+      formatUSD(finalDeficitDebt) + " accrued at 20% APR";
   } else if (debtFreeMonth !== null) {
     document.getElementById("debtFree").textContent = formatMonths(debtFreeMonth);
     document.getElementById("debtInterestPaid").textContent =
@@ -196,6 +255,15 @@ function calculate() {
     document.getElementById("debtFree").textContent = "Not within " + years + "y";
     document.getElementById("debtInterestPaid").textContent =
       formatUSD(totalInterestPaidOnDebt) + " interest paid so far";
+  }
+
+  // Escalate warning banner if simulation ever hit a deficit
+  if (deficitEverOccurred) {
+    var warningBanner = document.getElementById("savingsWarning");
+    warningBanner.style.display = "block";
+    warningBanner.textContent = finalDeficitDebt > 0.01
+      ? "Your costs exceeded income — " + formatUSD(finalDeficitDebt) + " of revolving debt accrued by end of period."
+      : "Your costs exceeded income in some months. Reserves were drawn down to cover the gap.";
   }
 
   // Emergency fund display
