@@ -140,8 +140,8 @@ function calculate() {
   chart.innerHTML = "";
 
   var step = 1;
-  if (years > 60) step = 5;
-  else if (years > 40) step = 2;
+  if (years > 30) step = 5;
+  else if (years > 15) step = 2;
 
   var filteredData = [];
   for (var j = 0; j < data.length; j++) {
@@ -151,12 +151,12 @@ function calculate() {
 
   var dpr = window.devicePixelRatio || 1;
   var chartW = chart.offsetWidth || 670;
-  var chartH = 360;
+  var chartH = 380;
   var n = filteredData.length;
-  var padL = 60;
+  var padL = 65;
   var padR = 20;
   var padT = 20;
-  var padB = 30;
+  var padB = 36;
   var canvas = document.createElement("canvas");
   canvas.width = chartW * dpr;
   canvas.height = chartH * dpr;
@@ -169,59 +169,53 @@ function calculate() {
   var plotW = chartW - padL - padR;
   var plotH = chartH - padT - padB;
 
-  var yMax = maxBalance > 0 ? maxBalance * 1.08 : 1;
-  var yMin;
+  // Use a single unified tick step for the whole axis
+  var rawMax = Math.max(maxBalance, maxDebt) || 1;
+  var tickStep = computeTickStep(rawMax);
+
+  // Snap yMax/yMin to tick boundaries for clean grid
+  var yMax = Math.ceil(maxBalance / tickStep) * tickStep;
+  if (yMax < maxBalance * 1.02) yMax += tickStep;
+  var yMin = 0;
   if (maxDebt > 0) {
-    yMin = -Math.max(maxDebt * 1.15, yMax * 0.2);
-  } else {
-    yMin = -(yMax * 0.03);
+    yMin = -(Math.ceil(maxDebt / tickStep) * tickStep);
+    if (Math.abs(yMin) < maxDebt * 1.02) yMin -= tickStep;
   }
-  var yRange = yMax - yMin;
+  var yRange = yMax - yMin || 1;
   function yPos(v) { return padT + ((yMax - v) / yRange) * plotH; }
   var zeroY = yPos(0);
 
   var colSpacing = plotW / n;
-  var barW = Math.max(3, Math.min(colSpacing * 0.65, 28));
+  var barW = Math.max(4, Math.min(colSpacing * 0.6, 30));
 
-  // Y-axis grid lines and labels
+  // Unified grid lines and y-axis labels
   ctx.font = "10px 'JetBrains Mono', monospace";
   ctx.textAlign = "right";
 
-  var tickStep = computeTickStep(yMax);
-  for (var t = 0; t <= yMax; t += tickStep) {
+  for (var t = yMin; t <= yMax; t += tickStep) {
     var ty = yPos(t);
-    ctx.strokeStyle = "#eef0f3";
+    if (t === 0) continue;
+    ctx.strokeStyle = t < 0 ? "#fbeaea" : "#eef0f3";
     ctx.lineWidth = 0.5;
     ctx.beginPath();
     ctx.moveTo(padL, ty);
     ctx.lineTo(chartW - padR, ty);
     ctx.stroke();
-    ctx.fillStyle = "#86868b";
+    ctx.fillStyle = t < 0 ? "#c0868b" : "#86868b";
     ctx.fillText(formatCompactUSD(t), padL - 8, ty + 3);
   }
 
-  if (maxDebt > 0) {
-    var debtTickStep = computeTickStep(Math.abs(yMin));
-    for (var t = -debtTickStep; t >= yMin; t -= debtTickStep) {
-      var ty = yPos(t);
-      ctx.strokeStyle = "#fbeaea";
-      ctx.lineWidth = 0.5;
-      ctx.beginPath();
-      ctx.moveTo(padL, ty);
-      ctx.lineTo(chartW - padR, ty);
-      ctx.stroke();
-      ctx.fillStyle = "#c0868b";
-      ctx.fillText(formatCompactUSD(t), padL - 8, ty + 3);
-    }
-  }
-
   // Zero line
-  ctx.strokeStyle = "#bbb";
+  ctx.strokeStyle = "#aaa";
   ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.moveTo(padL, zeroY);
   ctx.lineTo(chartW - padR, zeroY);
   ctx.stroke();
+  ctx.fillStyle = "#86868b";
+  ctx.font = "10px 'JetBrains Mono', monospace";
+  ctx.textAlign = "right";
+  ctx.fillText("$0", padL - 8, zeroY + 3);
 
   // Draw bars
   var netWorthPoints = [];
@@ -262,17 +256,11 @@ function calculate() {
   }
 
   // X-axis labels
-  var labelInterval = 1;
-  var minSpacing = 36;
-  while (colSpacing * labelInterval < minSpacing) labelInterval++;
-
   ctx.fillStyle = "#86868b";
   ctx.font = "10px 'JetBrains Mono', monospace";
   ctx.textAlign = "center";
   for (var i = 0; i < n; i++) {
     var d = filteredData[i];
-    var showLabel = (i === n - 1) || (i % labelInterval === 0);
-    if (!showLabel) continue;
     var cx = padL + (i + 0.5) * colSpacing;
     ctx.fillText(d.year + "y", cx, chartH - padB + 16);
   }
