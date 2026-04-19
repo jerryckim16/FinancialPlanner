@@ -2,7 +2,9 @@ function calculate() {
   // Income
   var annualIncome = num("annualIncome");
   var taxRate = num("taxRate") / 100;
+  var incomeGrowth = num("incomeGrowth") / 100;
   var monthlyTakeHome = (annualIncome * (1 - taxRate)) / 12;
+  var incomeMonthlyFactor = Math.pow(1 + incomeGrowth, 1 / 12);
   document.getElementById("monthlyTakeHome").textContent = formatUSD(monthlyTakeHome);
 
   // Costs (sum of dynamic cost list)
@@ -57,6 +59,7 @@ function calculate() {
   var debtFreeMonth = null;
   var hadDebt = loanState.some(function (l) { return l.balance > 0; });
 
+  var currentTakeHome = monthlyTakeHome;
   var data = [];
 
   for (var m = 1; m <= months; m++) {
@@ -85,13 +88,14 @@ function calculate() {
     }
 
     // Monthly contribution = take-home - costs - loan payments (clamped to 0)
-    var contribution = Math.max(0, monthlyTakeHome - thisMonthCosts - loanPaidThisMonth);
+    var contribution = Math.max(0, currentTakeHome - thisMonthCosts - loanPaidThisMonth);
 
     // Grow investment
     investment = investment * (1 + monthlyRate) + contribution;
     totalContributions += contribution;
 
-    // Apply inflation for the next month
+    // Grow take-home and inflate costs for the next month
+    currentTakeHome *= incomeMonthlyFactor;
     for (var ci2 = 0; ci2 < costState.length; ci2++) {
       costState[ci2].amount *= costState[ci2].monthlyFactor;
     }

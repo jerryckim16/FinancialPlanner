@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css?v=7" />
+  <link rel="stylesheet" href="css/styles.css?v=8" />
 </head>
 <body>
   <header>
@@ -21,7 +21,7 @@
     <!-- Job Income -->
     <div class="card">
       <h2>Job Income</h2>
-      <div class="field-group">
+      <div class="field-group three">
         <div>
           <label for="annualIncome">Annual Gross Income ($)</label>
           <input type="number" id="annualIncome" value="75000" min="0" step="1000" />
@@ -30,12 +30,16 @@
           <label for="taxRate">Effective Tax Rate (%)</label>
           <input type="number" id="taxRate" value="22" min="0" max="60" step="0.5" />
         </div>
+        <div>
+          <label for="incomeGrowth">Annual Raise (%)</label>
+          <input type="number" id="incomeGrowth" value="3" min="0" max="20" step="0.1" />
+        </div>
       </div>
       <div class="inline-summary">
-        <span class="label-text">Monthly Take-Home</span>
+        <span class="label-text">Monthly Take-Home (Today)</span>
         <span class="value-text" id="monthlyTakeHome">--</span>
       </div>
-      <div class="note">Tax rate should include federal + state + FICA (~22% is typical for middle income).</div>
+      <div class="note">Tax rate should include federal + state + FICA (~22% is typical for middle income). Annual raise grows your take-home over time (3% is a common long-run average that roughly tracks inflation).</div>
     </div>
 
     <!-- Monthly Costs -->
@@ -143,10 +147,10 @@
     </div>
   </div>
 
-  <script src="js/helpers.js?v=7"></script>
-  <script src="js/costs.js?v=7"></script>
-  <script src="js/loans.js?v=7"></script>
-  <script src="js/calculator.js?v=7"></script>
-  <script src="js/app.js?v=7"></script>
+  <script src="js/helpers.js?v=8"></script>
+  <script src="js/costs.js?v=8"></script>
+  <script src="js/loans.js?v=8"></script>
+  <script src="js/calculator.js?v=8"></script>
+  <script src="js/app.js?v=8"></script>
 </body>
 </html>
