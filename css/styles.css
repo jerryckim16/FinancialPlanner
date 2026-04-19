@@ -29,6 +29,46 @@ header h1 {
   color: #1d1d1f;
 }
 
+/* --- Tabs --- */
+
+.tab-bar {
+  display: flex;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.tab-btn {
+  padding: 7px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  border: 1px solid #d2d2d7;
+  border-radius: 20px;
+  background: transparent;
+  color: #6e6e73;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tab-btn:hover {
+  background: #f0f0f3;
+  color: #1d1d1f;
+}
+
+.tab-btn.active {
+  background: #1d1d1f;
+  color: #fff;
+  border-color: #1d1d1f;
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
 /* --- Layout --- */
 
 .container {
@@ -212,6 +252,7 @@ button {
 
 .cost-row input { background: #fff; }
 
+.card select,
 .cost-row select {
   width: 100%;
   padding: 8px 10px;
@@ -232,6 +273,7 @@ button {
   padding-right: 26px;
 }
 
+.card select:focus,
 .cost-row select:focus {
   outline: none;
   border-color: #0071e3;
@@ -513,6 +555,9 @@ button {
   border-radius: 0;
   vertical-align: middle;
 }
+
+.legend .leg-oc-spent::before { background: #86868b; }
+.legend .leg-oc-invested::before { background: #0071e3; }
 
 /* --- Utility --- */
 

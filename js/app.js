@@ -14,7 +14,8 @@ document.getElementById("addCostBtn").addEventListener("click", function () {
 renderCosts();
 renderLoans();
 
-document.querySelectorAll(".card input").forEach(function (el) {
+// Planner inputs
+document.querySelectorAll("#tab-planner input").forEach(function (el) {
   if (el.closest("#costsList") || el.closest("#loansList")) return;
   el.addEventListener("input", calculate);
 });
@@ -23,4 +24,23 @@ document.getElementById("investmentAllocation").addEventListener("input", functi
   document.getElementById("allocationLabel").textContent = this.value + "%";
 });
 
+// Opportunity cost inputs
+document.querySelectorAll("#tab-opportunity input, #tab-opportunity select").forEach(function (el) {
+  el.addEventListener("input", calculateOpportunity);
+});
+
+// Tab switching
+document.querySelectorAll(".tab-btn").forEach(function (btn) {
+  btn.addEventListener("click", function () {
+    document.querySelectorAll(".tab-btn").forEach(function (b) { b.classList.remove("active"); });
+    document.querySelectorAll(".tab-content").forEach(function (t) { t.classList.remove("active"); });
+    btn.classList.add("active");
+    document.getElementById(btn.getAttribute("data-tab")).classList.add("active");
+    if (btn.getAttribute("data-tab") === "tab-opportunity") {
+      calculateOpportunity();
+    }
+  });
+});
+
 calculate();
+calculateOpportunity();

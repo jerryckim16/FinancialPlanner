@@ -10,14 +10,19 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css?v=11" />
+  <link rel="stylesheet" href="css/styles.css?v=12" />
 </head>
 <body>
   <header>
     <h1>Financial Planner</h1>
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="tab-planner">Financial Planner</button>
+      <button class="tab-btn" data-tab="tab-opportunity">Opportunity Cost</button>
+    </div>
   </header>
 
   <div class="container">
+  <div id="tab-planner" class="tab-content active">
     <!-- Job Income -->
     <div class="card">
       <h2>Job Income</h2>
@@ -175,12 +180,98 @@
       </div>
       <div class="bar-chart" id="barChart"></div>
     </div>
+  </div><!-- /tab-planner -->
+
+  <div id="tab-opportunity" class="tab-content">
+    <!-- Spending -->
+    <div class="card">
+      <h2>What Are You Spending?</h2>
+      <div class="field-group">
+        <div>
+          <label for="ocOneTime">One-Time Purchase ($)</label>
+          <input type="number" id="ocOneTime" value="1000" min="0" step="100" />
+        </div>
+        <div>
+          <label for="ocName">Item Name (optional)</label>
+          <input type="text" id="ocName" value="" placeholder="e.g. New Phone" />
+        </div>
+      </div>
+      <div class="field-group" style="margin-top: 16px;">
+        <div>
+          <label for="ocRecurring">Recurring Expense ($)</label>
+          <input type="number" id="ocRecurring" value="0" min="0" step="1" />
+        </div>
+        <div>
+          <label for="ocFrequency">Frequency</label>
+          <select id="ocFrequency">
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly" selected>Monthly</option>
+            <option value="annual">Annual</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Investment Assumptions -->
+    <div class="card">
+      <h2>Investment Assumptions</h2>
+      <div class="field-group">
+        <div>
+          <label for="ocRate">Annual Return Rate (%)</label>
+          <input type="number" id="ocRate" value="7" min="-50" max="100" step="0.5" />
+        </div>
+        <div>
+          <label for="ocYears">Time Horizon (years)</label>
+          <input type="number" id="ocYears" value="30" min="1" max="80" step="1" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div class="card">
+      <h2>Opportunity Cost</h2>
+      <div class="results">
+        <div class="stat-card">
+          <div class="stat-label">Total Amount Spent</div>
+          <div class="stat-value" id="ocSpent">--</div>
+          <div class="stat-sub" id="ocSpentSub"></div>
+        </div>
+        <div class="stat-card highlight">
+          <div class="stat-label">Would Have Grown To</div>
+          <div class="stat-value" id="ocGrown">--</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Opportunity Cost</div>
+          <div class="stat-value" id="ocCost">--</div>
+          <div class="stat-sub" id="ocCostSub"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Growth Multiple</div>
+          <div class="stat-value" id="ocMultiple">--</div>
+          <div class="stat-sub" id="ocMultipleSub"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Growth Chart -->
+    <div class="card">
+      <h2>Growth Over Time</h2>
+      <div class="legend">
+        <span class="leg-oc-spent">Cumulative Spent</span>
+        <span class="leg-oc-invested">If Invested</span>
+      </div>
+      <div class="bar-chart" id="ocChart"></div>
+    </div>
+  </div><!-- /tab-opportunity -->
+
   </div>
 
-  <script src="js/helpers.js?v=11"></script>
-  <script src="js/costs.js?v=11"></script>
-  <script src="js/loans.js?v=11"></script>
-  <script src="js/calculator.js?v=11"></script>
-  <script src="js/app.js?v=11"></script>
+  <script src="js/helpers.js?v=12"></script>
+  <script src="js/costs.js?v=12"></script>
+  <script src="js/loans.js?v=12"></script>
+  <script src="js/calculator.js?v=12"></script>
+  <script src="js/opportunity.js?v=12"></script>
+  <script src="js/app.js?v=12"></script>
 </body>
 </html>
