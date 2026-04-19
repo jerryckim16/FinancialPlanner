@@ -299,7 +299,7 @@ function calculate() {
 
     // Net worth point
     var nw = d.balance + d.emergencyFund - d.debtRemaining;
-    netWorthPoints.push({ x: cx, y: yPos(nw) });
+    netWorthPoints.push({ x: cx, y: yPos(nw), value: nw, year: d.year });
   }
 
   // X-axis labels
@@ -332,6 +332,80 @@ function calculate() {
       ctx.beginPath();
       ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
       ctx.fill();
+    }
+  }
+
+  // Hover tooltip for net worth dots
+  var tooltip = document.createElement("div");
+  tooltip.className = "chart-tooltip";
+  chart.appendChild(tooltip);
+
+  var HOVER_RADIUS = 20;
+  var activePoint = null;
+
+  canvas.addEventListener("mousemove", function (e) {
+    var rect = canvas.getBoundingClientRect();
+    var mx = e.clientX - rect.left;
+    var my = e.clientY - rect.top;
+
+    var closest = null;
+    var minDist = HOVER_RADIUS;
+    for (var i = 0; i < netWorthPoints.length; i++) {
+      var p = netWorthPoints[i];
+      var dx = mx - p.x;
+      var dy = my - p.y;
+      var dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < minDist) {
+        minDist = dist;
+        closest = p;
+      }
+    }
+
+    if (closest) {
+      if (activePoint !== closest) {
+        activePoint = closest;
+        tooltip.innerHTML =
+          '<div class="tt-year">Year ' + closest.year + '</div>' +
+          '<div class="tt-value">' + formatUSD(closest.value) + '</div>' +
+          '<div class="tt-label">Net Worth</div>';
+        redrawHighlight(closest);
+      }
+      tooltip.style.left = closest.x + "px";
+      tooltip.style.top = (closest.y - 12) + "px";
+      tooltip.classList.add("visible");
+      canvas.style.cursor = "pointer";
+    } else if (activePoint) {
+      activePoint = null;
+      tooltip.classList.remove("visible");
+      canvas.style.cursor = "default";
+      redrawHighlight(null);
+    }
+  });
+
+  canvas.addEventListener("mouseleave", function () {
+    activePoint = null;
+    tooltip.classList.remove("visible");
+    canvas.style.cursor = "default";
+    redrawHighlight(null);
+  });
+
+  function redrawHighlight(point) {
+    // Redraw all dots, enlarging the hovered one
+    ctx.fillStyle = "#1d1d1f";
+    for (var i = 0; i < netWorthPoints.length; i++) {
+      var p = netWorthPoints[i];
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    if (point) {
+      ctx.fillStyle = "#fff";
+      ctx.strokeStyle = "#1d1d1f";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(point.x, point.y, 5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
     }
   }
 
