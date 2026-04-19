@@ -2,19 +2,25 @@ document.getElementById("addLoanBtn").addEventListener("click", function () {
   loans.push({ name: "Loan " + (++loanIdCounter), balance: 5000, rate: 6, payment: 100 });
   renderLoans();
   calculate();
+  scheduleSave();
 });
 
 document.getElementById("addCostBtn").addEventListener("click", function () {
   costs.push({ name: "New Cost " + (++costIdCounter), amount: 0, inflation: 0, frequency: "monthly" });
   renderCosts();
   calculate();
+  scheduleSave();
 });
 
 document.getElementById("addInvestmentBtn").addEventListener("click", function () {
   investments.push({ name: "Investment " + (++investmentIdCounter), rate: 7, allocation: 0 });
   renderInvestments();
   calculate();
+  scheduleSave();
 });
+
+// Restore persisted state before initial render
+loadState();
 
 // Initial render
 renderCosts();
@@ -24,7 +30,10 @@ renderInvestments();
 // Planner inputs
 document.querySelectorAll("#tab-planner input").forEach(function (el) {
   if (el.closest("#costsList") || el.closest("#loansList") || el.closest("#investmentsList")) return;
-  el.addEventListener("input", calculate);
+  el.addEventListener("input", function () {
+    calculate();
+    scheduleSave();
+  });
 });
 
 document.getElementById("investmentAllocation").addEventListener("input", function () {
@@ -33,7 +42,10 @@ document.getElementById("investmentAllocation").addEventListener("input", functi
 
 // Opportunity cost inputs
 document.querySelectorAll("#tab-opportunity input, #tab-opportunity select").forEach(function (el) {
-  el.addEventListener("input", calculateOpportunity);
+  el.addEventListener("input", function () {
+    calculateOpportunity();
+    scheduleSave();
+  });
 });
 
 // Opportunity cost spending-type toggle
@@ -47,6 +59,7 @@ document.querySelectorAll("#ocSpendingType .seg-btn").forEach(function (btn) {
     document.getElementById("ocFrequencyRow").style.display =
       type === "recurring" ? "block" : "none";
     calculateOpportunity();
+    scheduleSave();
   });
 });
 
@@ -61,6 +74,13 @@ document.querySelectorAll(".tab-btn").forEach(function (btn) {
       calculateOpportunity();
     }
   });
+});
+
+// Reset button
+document.getElementById("resetBtn").addEventListener("click", function () {
+  if (confirm("Reset all inputs to defaults? This cannot be undone.")) {
+    resetState();
+  }
 });
 
 calculate();

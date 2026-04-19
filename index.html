@@ -10,11 +10,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css?v=20" />
+  <link rel="stylesheet" href="css/styles.css?v=21" />
 </head>
 <body>
   <header>
-    <h1>Financial Planner</h1>
+    <div class="header-top">
+      <h1>Financial Planner</h1>
+      <button class="btn-ghost" id="resetBtn" title="Clear saved data and restore default values">Reset to Defaults</button>
+    </div>
     <div class="tab-bar">
       <button class="tab-btn active" data-tab="tab-planner">Financial Planner</button>
       <button class="tab-btn" data-tab="tab-opportunity">Opportunity Cost</button>
@@ -273,12 +276,13 @@
 
   </div>
 
-  <script src="js/helpers.js?v=20"></script>
-  <script src="js/costs.js?v=20"></script>
-  <script src="js/loans.js?v=20"></script>
-  <script src="js/investments.js?v=20"></script>
-  <script src="js/calculator.js?v=20"></script>
-  <script src="js/opportunity.js?v=20"></script>
-  <script src="js/app.js?v=20"></script>
+  <script src="js/helpers.js?v=21"></script>
+  <script src="js/storage.js?v=21"></script>
+  <script src="js/costs.js?v=21"></script>
+  <script src="js/loans.js?v=21"></script>
+  <script src="js/investments.js?v=21"></script>
+  <script src="js/calculator.js?v=21"></script>
+  <script src="js/opportunity.js?v=21"></script>
+  <script src="js/app.js?v=21"></script>
 </body>
 </html>

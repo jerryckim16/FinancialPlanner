@@ -1,6 +1,7 @@
-var loans = [
+var DEFAULT_LOANS = [
   { name: "Student Loan", balance: 25000, rate: 5.5, payment: 280 }
 ];
+var loans = DEFAULT_LOANS.map(function (l) { return Object.assign({}, l); });
 var loanIdCounter = 0;
 
 function simulateLoan(balance, annualRate, payment) {
@@ -98,6 +99,7 @@ function renderLoans() {
       var value = field === "name" ? e.target.value : (parseFloat(e.target.value) || 0);
       loans[idx][field] = value;
       calculate();
+      scheduleSave();
       var metaDiv = e.target.closest(".loan-row").querySelector(".loan-meta");
       var meta = simulateLoan(loans[idx].balance, loans[idx].rate, loans[idx].payment);
       metaDiv.innerHTML = meta.neverPaysOff
@@ -114,6 +116,7 @@ function renderLoans() {
       loans.splice(idx, 1);
       renderLoans();
       calculate();
+      scheduleSave();
     });
   });
 }

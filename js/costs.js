@@ -1,4 +1,4 @@
-var costs = [
+var DEFAULT_COSTS = [
   { name: "Rent / Mortgage", amount: 1500, inflation: 3, frequency: "monthly" },
   { name: "Food", amount: 500, inflation: 2.5, frequency: "monthly" },
   { name: "Car Payment", amount: 300, inflation: 0, frequency: "monthly" },
@@ -7,6 +7,7 @@ var costs = [
   { name: "Utilities", amount: 150, inflation: 3, frequency: "monthly" },
   { name: "Other", amount: 100, inflation: 2, frequency: "monthly" }
 ];
+var costs = DEFAULT_COSTS.map(function (c) { return Object.assign({}, c); });
 var costIdCounter = 0;
 
 function renderCosts() {
@@ -64,6 +65,7 @@ function renderCosts() {
       }
       costs[idx][field] = value;
       calculate();
+      scheduleSave();
     });
   });
 
@@ -73,6 +75,7 @@ function renderCosts() {
       costs.splice(idx, 1);
       renderCosts();
       calculate();
+      scheduleSave();
     });
   });
 }

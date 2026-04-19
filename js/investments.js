@@ -1,7 +1,8 @@
-var investments = [
+var DEFAULT_INVESTMENTS = [
   { name: "US Stock Index", rate: 10, allocation: 80 },
   { name: "Bond Index", rate: 4, allocation: 20 }
 ];
+var investments = DEFAULT_INVESTMENTS.map(function (inv) { return Object.assign({}, inv); });
 var investmentIdCounter = 0;
 
 function getNormalizedAllocations() {
@@ -61,6 +62,7 @@ function renderInvestments() {
       }
       if (field === "allocation") renderAllocationIndicator(container);
       calculate();
+      scheduleSave();
     });
   });
 
@@ -70,6 +72,7 @@ function renderInvestments() {
       investments.splice(idx, 1);
       renderInvestments();
       calculate();
+      scheduleSave();
     });
   });
 
