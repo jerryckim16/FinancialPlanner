@@ -227,14 +227,22 @@ function calculate() {
   }
 
   var last = data[data.length - 1];
-  document.getElementById("totalValue").textContent = formatUSD(last.balance);
-  document.getElementById("totalInterest").textContent = formatUSD(last.interest);
-  document.getElementById("totalContrib").textContent = formatUSD(last.contributed);
+  var finalAssets = last.balance + last.emergencyFund;
+  var finalNetWorth = finalAssets - last.debtRemaining;
+
+  document.getElementById("netWorthValue").textContent = formatUSD(finalNetWorth);
+  document.getElementById("totalAssets").textContent = formatUSD(finalAssets);
+  var assetParts = [];
+  if (last.balance > 0.01) assetParts.push(formatUSD(last.balance) + " invested");
+  if (last.emergencyFund > 0.01) assetParts.push(formatUSD(last.emergencyFund) + " emergency");
+  document.getElementById("assetsSub").textContent = assetParts.join(" + ");
+
+  document.getElementById("totalDebtEnd").textContent =
+    last.debtRemaining > 0.01 ? formatUSD(last.debtRemaining) : "$0";
+  document.getElementById("debtEndSub").textContent =
+    totalInterestPaidOnDebt > 0.01 ? formatUSD(totalInterestPaidOnDebt) + " total interest paid" : "";
+
   document.getElementById("futureCosts").textContent = formatUSD(last.monthlyCosts);
-  document.getElementById("interestPct").textContent =
-    last.contributed > 0
-      ? Math.round((last.interest / last.contributed) * 100) + "% return on contributions"
-      : "";
 
   // Debt-free display
   var finalDeficitDebt = last.deficitDebt || 0;
@@ -246,7 +254,7 @@ function calculate() {
   } else if (finalDeficitDebt > 0.01) {
     document.getElementById("debtFree").textContent = "In deficit";
     document.getElementById("debtInterestPaid").textContent =
-      formatUSD(finalDeficitDebt) + " accrued at 20% APR";
+      formatUSD(finalDeficitDebt) + " accrued at " + (DEFICIT_APR * 100) + "% APR";
   } else if (debtFreeMonth !== null) {
     document.getElementById("debtFree").textContent = formatMonths(debtFreeMonth);
     document.getElementById("debtInterestPaid").textContent =
@@ -282,14 +290,12 @@ function calculate() {
     var bHtml = '<div class="breakdown-header">Investment Breakdown</div>';
     bHtml += '<div class="breakdown-table">';
     bHtml += '<div class="breakdown-row breakdown-row-header">' +
-      '<span>Investment</span><span>Balance</span><span>Contributed</span><span>Interest</span></div>';
+      '<span>Investment</span><span>Balance</span></div>';
     for (var bi = 0; bi < last.investmentBreakdown.length; bi++) {
       var bInv = last.investmentBreakdown[bi];
       bHtml += '<div class="breakdown-row">' +
         '<span>' + escapeHtml(bInv.name) + '</span>' +
         '<span>' + formatUSD(bInv.balance) + '</span>' +
-        '<span>' + formatUSD(bInv.contributed) + '</span>' +
-        '<span>' + formatUSD(bInv.interest) + '</span>' +
         '</div>';
     }
     bHtml += '</div>';
@@ -300,12 +306,14 @@ function calculate() {
 
   // Vertical bar chart with canvas
   // Scan data for actual ranges (not just last point or initial state)
-  var maxBalance = 0;
+  var maxAssets = 0;
   var maxDebt = 0;
   for (var j = 0; j < data.length; j++) {
-    if (data[j].balance > maxBalance) maxBalance = data[j].balance;
+    var assets = data[j].balance + data[j].emergencyFund;
+    if (assets > maxAssets) maxAssets = assets;
     if (data[j].debtRemaining > maxDebt) maxDebt = data[j].debtRemaining;
   }
+  var maxBalance = maxAssets;
   var chart = document.getElementById("barChart");
   chart.innerHTML = "";
 
@@ -394,24 +402,13 @@ function calculate() {
     var cx = padL + (i + 0.5) * colSpacing;
     var x = cx - barW / 2;
 
-    // Portfolio bars (upward from zero)
-    if (d.balance > 0.01) {
-      if (d.interest >= 0) {
-        var contribTop = yPos(d.contributed);
-        ctx.fillStyle = "#0071e3";
-        roundedRect(ctx, x, contribTop, barW, zeroY - contribTop, 3, "bottom");
-        ctx.fill();
-
-        var balTop = yPos(d.balance);
-        ctx.fillStyle = "#34c759";
-        roundedRect(ctx, x, balTop, barW, contribTop - balTop, 3, "top");
-        ctx.fill();
-      } else {
-        var balTop = yPos(d.balance);
-        ctx.fillStyle = "#0071e3";
-        roundedRect(ctx, x, balTop, barW, zeroY - balTop, 3, "both");
-        ctx.fill();
-      }
+    // Assets bar (investments + emergency fund, upward from zero)
+    var totalAssets = d.balance + d.emergencyFund;
+    if (totalAssets > 0.01) {
+      var assetsTop = yPos(totalAssets);
+      ctx.fillStyle = "#0071e3";
+      roundedRect(ctx, x, assetsTop, barW, zeroY - assetsTop, 3, "both");
+      ctx.fill();
     }
 
     // Debt bar (downward from zero)

@@ -487,7 +487,7 @@ button {
 
 .breakdown-row {
   display: grid;
-  grid-template-columns: 1.5fr 1fr 1fr 1fr;
+  grid-template-columns: 1.5fr 1fr;
   gap: 8px;
   padding: 8px 14px;
   font-size: 12px;
@@ -715,8 +715,7 @@ button {
   vertical-align: middle;
 }
 
-.legend .leg-principal::before { background: #0071e3; }
-.legend .leg-interest::before { background: #34c759; }
+.legend .leg-assets::before { background: #0071e3; }
 .legend .leg-debt::before { background: #ff3b30; }
 .legend .leg-networth::before {
   background: transparent;

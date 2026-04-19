@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css?v=17" />
+  <link rel="stylesheet" href="css/styles.css?v=18" />
 </head>
 <body>
   <header>
@@ -156,17 +156,18 @@
       <h2>Results</h2>
       <div class="results">
         <div class="stat-card highlight">
-          <div class="stat-label">Total Value</div>
-          <div class="stat-value" id="totalValue">--</div>
+          <div class="stat-label">Net Worth</div>
+          <div class="stat-value" id="netWorthValue">--</div>
         </div>
         <div class="stat-card">
-          <div class="stat-label">Total Interest Earned</div>
-          <div class="stat-value" id="totalInterest">--</div>
-          <div class="stat-sub" id="interestPct"></div>
+          <div class="stat-label">Total Assets</div>
+          <div class="stat-value" id="totalAssets">--</div>
+          <div class="stat-sub" id="assetsSub"></div>
         </div>
         <div class="stat-card">
-          <div class="stat-label">Total Contributions</div>
-          <div class="stat-value" id="totalContrib">--</div>
+          <div class="stat-label">Total Debt</div>
+          <div class="stat-value" id="totalDebtEnd">--</div>
+          <div class="stat-sub" id="debtEndSub"></div>
         </div>
         <div class="stat-card">
           <div class="stat-label">Debt-Free In</div>
@@ -181,8 +182,7 @@
     <div class="card">
       <h2>Growth Over Time</h2>
       <div class="legend">
-        <span class="leg-principal">Contributions</span>
-        <span class="leg-interest">Interest</span>
+        <span class="leg-assets">Assets</span>
         <span class="leg-debt">Remaining Debt</span>
         <span class="leg-networth">Net Worth</span>
       </div>
@@ -273,12 +273,12 @@
 
   </div>
 
-  <script src="js/helpers.js?v=17"></script>
-  <script src="js/costs.js?v=17"></script>
-  <script src="js/loans.js?v=17"></script>
-  <script src="js/investments.js?v=17"></script>
-  <script src="js/calculator.js?v=17"></script>
-  <script src="js/opportunity.js?v=17"></script>
-  <script src="js/app.js?v=17"></script>
+  <script src="js/helpers.js?v=18"></script>
+  <script src="js/costs.js?v=18"></script>
+  <script src="js/loans.js?v=18"></script>
+  <script src="js/investments.js?v=18"></script>
+  <script src="js/calculator.js?v=18"></script>
+  <script src="js/opportunity.js?v=18"></script>
+  <script src="js/app.js?v=18"></script>
 </body>
 </html>
