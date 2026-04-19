@@ -299,8 +299,13 @@ function calculate() {
   }
 
   // Vertical bar chart with canvas
-  var maxBalance = last.balance;
-  var maxDebt = totalDebt;
+  // Scan data for actual ranges (not just last point or initial state)
+  var maxBalance = 0;
+  var maxDebt = 0;
+  for (var j = 0; j < data.length; j++) {
+    if (data[j].balance > maxBalance) maxBalance = data[j].balance;
+    if (data[j].debtRemaining > maxDebt) maxDebt = data[j].debtRemaining;
+  }
   var chart = document.getElementById("barChart");
   chart.innerHTML = "";
 
@@ -338,8 +343,8 @@ function calculate() {
   var rawMax = Math.max(maxBalance, maxDebt) || 1;
   var tickStep = computeTickStep(rawMax);
 
-  // Snap yMax/yMin to tick boundaries for clean grid
-  var yMax = Math.ceil(maxBalance / tickStep) * tickStep;
+  // Snap yMax/yMin to tick boundaries; always include at least one tick of positive space
+  var yMax = Math.max(tickStep, Math.ceil(maxBalance / tickStep) * tickStep);
   if (yMax < maxBalance * 1.02) yMax += tickStep;
   var yMin = 0;
   if (maxDebt > 0) {
@@ -390,21 +395,23 @@ function calculate() {
     var x = cx - barW / 2;
 
     // Portfolio bars (upward from zero)
-    if (d.interest >= 0) {
-      var contribTop = yPos(d.contributed);
-      ctx.fillStyle = "#0071e3";
-      roundedRect(ctx, x, contribTop, barW, zeroY - contribTop, 3, "bottom");
-      ctx.fill();
+    if (d.balance > 0.01) {
+      if (d.interest >= 0) {
+        var contribTop = yPos(d.contributed);
+        ctx.fillStyle = "#0071e3";
+        roundedRect(ctx, x, contribTop, barW, zeroY - contribTop, 3, "bottom");
+        ctx.fill();
 
-      var balTop = yPos(d.balance);
-      ctx.fillStyle = "#34c759";
-      roundedRect(ctx, x, balTop, barW, contribTop - balTop, 3, "top");
-      ctx.fill();
-    } else {
-      var balTop = yPos(Math.max(0, d.balance));
-      ctx.fillStyle = "#0071e3";
-      roundedRect(ctx, x, balTop, barW, zeroY - balTop, 3, "both");
-      ctx.fill();
+        var balTop = yPos(d.balance);
+        ctx.fillStyle = "#34c759";
+        roundedRect(ctx, x, balTop, barW, contribTop - balTop, 3, "top");
+        ctx.fill();
+      } else {
+        var balTop = yPos(d.balance);
+        ctx.fillStyle = "#0071e3";
+        roundedRect(ctx, x, balTop, barW, zeroY - balTop, 3, "both");
+        ctx.fill();
+      }
     }
 
     // Debt bar (downward from zero)
@@ -482,12 +489,22 @@ function calculate() {
     if (closest) {
       if (activePoint !== closest) {
         activePoint = closest;
+        var fd = filteredData[closest.dataIdx];
         var ttBreakdown = '';
-        var bd = filteredData[closest.dataIdx].investmentBreakdown;
-        if (bd && bd.length > 1) {
+        var parts = [];
+        if (fd.balance > 0.01) parts.push('Investments: ' + formatUSD(fd.balance));
+        if (fd.emergencyFund > 0.01) parts.push('Emergency Fund: ' + formatUSD(fd.emergencyFund));
+        if (fd.debtRemaining > 0.01) parts.push('Debt: -' + formatUSD(fd.debtRemaining));
+        if (parts.length > 0) {
           ttBreakdown = '<div class="tt-breakdown">';
-          for (var bi = 0; bi < bd.length; bi++) {
-            ttBreakdown += '<div class="tt-inv">' + escapeHtml(bd[bi].name) + ': ' + formatUSD(bd[bi].balance) + '</div>';
+          for (var pi = 0; pi < parts.length; pi++) {
+            ttBreakdown += '<div class="tt-inv">' + parts[pi] + '</div>';
+          }
+          var bd = fd.investmentBreakdown;
+          if (bd && bd.length > 1 && fd.balance > 0.01) {
+            for (var bi = 0; bi < bd.length; bi++) {
+              ttBreakdown += '<div class="tt-inv">&nbsp;&nbsp;' + escapeHtml(bd[bi].name) + ': ' + formatUSD(bd[bi].balance) + '</div>';
+            }
           }
           ttBreakdown += '</div>';
         }
