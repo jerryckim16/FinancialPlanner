@@ -1,11 +1,11 @@
 var costs = [
-  { name: "Rent / Mortgage", amount: 1500, inflation: 3 },
-  { name: "Food", amount: 500, inflation: 2.5 },
-  { name: "Car Payment", amount: 300, inflation: 0 },
-  { name: "Car Insurance", amount: 120, inflation: 4 },
-  { name: "Phone", amount: 60, inflation: 0 },
-  { name: "Utilities", amount: 150, inflation: 3 },
-  { name: "Other", amount: 100, inflation: 2 }
+  { name: "Rent / Mortgage", amount: 1500, inflation: 3, frequency: "monthly" },
+  { name: "Food", amount: 500, inflation: 2.5, frequency: "monthly" },
+  { name: "Car Payment", amount: 300, inflation: 0, frequency: "monthly" },
+  { name: "Car Insurance", amount: 1440, inflation: 4, frequency: "annual" },
+  { name: "Phone", amount: 60, inflation: 0, frequency: "monthly" },
+  { name: "Utilities", amount: 150, inflation: 3, frequency: "monthly" },
+  { name: "Other", amount: 100, inflation: 2, frequency: "monthly" }
 ];
 var costIdCounter = 0;
 
@@ -21,17 +21,19 @@ function renderCosts() {
     return;
   }
 
-  // Header row so users understand the inflation column
+  // Header row
   var header = document.createElement("div");
   header.className = "cost-row cost-header";
   header.innerHTML =
     '<span>Name</span>' +
-    '<span>Monthly $</span>' +
+    '<span>Amount</span>' +
+    '<span>Frequency</span>' +
     '<span>Annual %</span>' +
     '<span></span>';
   container.appendChild(header);
 
   costs.forEach(function (cost, idx) {
+    var freq = cost.frequency || "monthly";
     var row = document.createElement("div");
     row.className = "cost-row";
     row.innerHTML =
@@ -39,6 +41,10 @@ function renderCosts() {
       '<div class="dollar-prefix">' +
         '<input type="number" data-idx="' + idx + '" data-field="amount" value="' + cost.amount + '" min="0" step="10" />' +
       '</div>' +
+      '<select data-idx="' + idx + '" data-field="frequency">' +
+        '<option value="monthly"' + (freq === "monthly" ? " selected" : "") + '>Monthly</option>' +
+        '<option value="annual"' + (freq === "annual" ? " selected" : "") + '>Annual</option>' +
+      '</select>' +
       '<div class="percent-suffix">' +
         '<input type="number" data-idx="' + idx + '" data-field="inflation" value="' + (cost.inflation || 0) + '" min="0" max="50" step="0.1" title="Annual inflation rate" />' +
       '</div>' +
@@ -46,11 +52,16 @@ function renderCosts() {
     container.appendChild(row);
   });
 
-  container.querySelectorAll("input").forEach(function (el) {
+  container.querySelectorAll("input, select").forEach(function (el) {
     el.addEventListener("input", function (e) {
       var idx = parseInt(e.target.getAttribute("data-idx"));
       var field = e.target.getAttribute("data-field");
-      var value = field === "name" ? e.target.value : (parseFloat(e.target.value) || 0);
+      var value;
+      if (field === "name" || field === "frequency") {
+        value = e.target.value;
+      } else {
+        value = parseFloat(e.target.value) || 0;
+      }
       costs[idx][field] = value;
       calculate();
     });

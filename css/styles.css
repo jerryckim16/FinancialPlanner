@@ -194,7 +194,7 @@ button {
 
 .cost-row {
   display: grid;
-  grid-template-columns: 2fr 1fr 0.9fr auto;
+  grid-template-columns: 1.8fr 1fr 1fr 0.9fr auto;
   gap: 10px;
   align-items: center;
   padding: 8px 12px;
@@ -211,6 +211,32 @@ button {
 }
 
 .cost-row input { background: #fff; }
+
+.cost-row select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #d2d2d7;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'><path fill='%2386868b' d='M2 4l4 4 4-4'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 12px;
+  padding-right: 26px;
+}
+
+.cost-row select:focus {
+  outline: none;
+  border-color: #0071e3;
+  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.12);
+}
 
 /* Column header row above the cost list */
 .cost-row.cost-header {

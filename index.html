@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css?v=9" />
+  <link rel="stylesheet" href="css/styles.css?v=10" />
 </head>
 <body>
   <header>
@@ -42,10 +42,10 @@
       <div class="note">Tax rate should include federal + state + FICA (~22% is typical for middle income). Annual raise grows your take-home over time (3% is a common long-run average that roughly tracks inflation).</div>
     </div>
 
-    <!-- Monthly Costs -->
+    <!-- Costs -->
     <div class="card">
       <div class="card-header">
-        <h2>Monthly Costs</h2>
+        <h2>Costs</h2>
         <button class="btn-primary" id="addCostBtn">+ Add Cost</button>
       </div>
       <div id="costsList"></div>
@@ -53,7 +53,7 @@
         <span class="label-text">Total Monthly Costs</span>
         <span class="value-text" id="totalCosts">--</span>
       </div>
-      <div class="note">Add any recurring monthly expense. The <strong>annual %</strong> column applies inflation to each cost over time (e.g. 3% annual rent growth compounds monthly in the projection).</div>
+      <div class="note">Add any recurring expense. Use <strong>Frequency</strong> for costs billed annually (e.g. insurance) — the amount is spread evenly across 12 months. The <strong>annual %</strong> column applies inflation to each cost over time.</div>
     </div>
 
     <!-- Loans -->
@@ -177,10 +177,10 @@
     </div>
   </div>
 
-  <script src="js/helpers.js?v=9"></script>
-  <script src="js/costs.js?v=9"></script>
-  <script src="js/loans.js?v=9"></script>
-  <script src="js/calculator.js?v=9"></script>
-  <script src="js/app.js?v=9"></script>
+  <script src="js/helpers.js?v=10"></script>
+  <script src="js/costs.js?v=10"></script>
+  <script src="js/loans.js?v=10"></script>
+  <script src="js/calculator.js?v=10"></script>
+  <script src="js/app.js?v=10"></script>
 </body>
 </html>

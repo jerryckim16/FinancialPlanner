@@ -7,8 +7,11 @@ function calculate() {
   var incomeMonthlyFactor = Math.pow(1 + incomeGrowth, 1 / 12);
   document.getElementById("monthlyTakeHome").textContent = formatUSD(monthlyTakeHome);
 
-  // Costs (sum of dynamic cost list)
-  var totalCosts = costs.reduce(function (s, c) { return s + (c.amount || 0); }, 0);
+  // Costs (sum of dynamic cost list, normalized to monthly equivalents)
+  var totalCosts = costs.reduce(function (s, c) {
+    var amt = c.amount || 0;
+    return s + (c.frequency === "annual" ? amt / 12 : amt);
+  }, 0);
   document.getElementById("totalCosts").textContent = formatUSD(totalCosts);
 
   // Loan summary (initial state)
@@ -50,10 +53,13 @@ function calculate() {
   });
 
   // Clone cost state with a per-cost monthly inflation factor.
+  // Annual costs are spread evenly across 12 months.
   var costState = costs.map(function (c) {
+    var amt = c.amount || 0;
+    var monthlyAmount = c.frequency === "annual" ? amt / 12 : amt;
     var annualInflation = c.inflation || 0;
     return {
-      amount: c.amount || 0,
+      amount: monthlyAmount,
       monthlyFactor: Math.pow(1 + annualInflation / 100, 1 / 12)
     };
   });
