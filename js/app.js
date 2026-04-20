@@ -13,7 +13,7 @@ document.getElementById("addCostBtn").addEventListener("click", function () {
 });
 
 document.getElementById("addInvestmentBtn").addEventListener("click", function () {
-  investments.push({ name: "Investment " + (++investmentIdCounter), rate: 7, allocation: 0 });
+  investments.push({ name: "Investment " + (++investmentIdCounter), rate: 7, dividend: 0, allocation: 0 });
   renderInvestments();
   calculate();
   scheduleSave();

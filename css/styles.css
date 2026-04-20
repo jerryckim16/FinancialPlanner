@@ -406,7 +406,7 @@ button {
 
 .investment-row {
   display: grid;
-  grid-template-columns: 1.8fr 1fr 1fr auto;
+  grid-template-columns: 1.8fr 1fr 1fr 1fr auto;
   gap: 10px;
   align-items: center;
   padding: 8px 12px;
@@ -510,13 +510,21 @@ button {
 }
 
 .breakdown-row {
-  display: grid;
-  grid-template-columns: 1.5fr 1fr;
+  display: flex;
   gap: 8px;
   padding: 8px 14px;
   font-size: 12px;
   font-family: "JetBrains Mono", "SF Mono", "Fira Code", "Consolas", monospace;
   border-bottom: 1px solid #eee;
+}
+
+.breakdown-row span:first-child {
+  flex: 1.5;
+}
+
+.breakdown-row span:not(:first-child) {
+  flex: 1;
+  text-align: right;
 }
 
 .breakdown-row:last-child { border-bottom: none; }
@@ -781,5 +789,5 @@ button {
   .cost-row.cost-header { display: none; }
   .investment-row { grid-template-columns: 1fr 1fr; }
   .investment-row.investment-header { display: none; }
-  .breakdown-row { grid-template-columns: 1fr 1fr; }
+  .breakdown-row span:first-child { flex: 1; }
 }

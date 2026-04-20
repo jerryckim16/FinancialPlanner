@@ -48,6 +48,9 @@ function calculate() {
   var monthlyRates = investments.map(function (inv) {
     return (inv.rate || 0) / 100 / 12;
   });
+  var monthlyDividendRates = investments.map(function (inv) {
+    return (inv.dividend || 0) / 100 / 12;
+  });
 
   // Clone loan state for simulation
   var loanState = loans.map(function (l) {
@@ -68,10 +71,12 @@ function calculate() {
 
   var invBalances = [];
   var invContributions = [];
+  var invDividendsPaid = [];
   for (var k = 0; k < invCount; k++) {
     var initBal = principal * allocations[k];
     invBalances.push(initBal);
     invContributions.push(initBal);
+    invDividendsPaid.push(0);
   }
   var investment = principal;
   var totalContributions = principal;
@@ -155,17 +160,25 @@ function calculate() {
     }
 
     // Grow each investment independently (applies regardless of surplus/deficit)
+    var monthlyDividends = 0;
     if (invCount > 0) {
       for (var k = 0; k < invCount; k++) {
         var thisContrib = investContrib * allocations[k];
         invBalances[k] = invBalances[k] * (1 + monthlyRates[k]) + thisContrib;
         invContributions[k] += thisContrib;
+        var divPayout = invBalances[k] * monthlyDividendRates[k];
+        if (divPayout > 0) {
+          monthlyDividends += divPayout;
+          invBalances[k] -= divPayout;
+          invDividendsPaid[k] += divPayout;
+        }
       }
       investment = invBalances.reduce(function (s, b) { return s + b; }, 0);
     } else {
       investment += investContrib;
     }
     totalContributions += investContrib;
+    savings += monthlyDividends;
 
     // Accrue interest on any deficit debt
     if (deficitDebt > 0) {
@@ -202,7 +215,8 @@ function calculate() {
             name: inv.name,
             balance: invBalances[idx],
             contributed: invContributions[idx],
-            interest: invBalances[idx] - invContributions[idx]
+            interest: invBalances[idx] - invContributions[idx],
+            dividendsPaid: invDividendsPaid[idx]
           };
         })
       });
@@ -265,13 +279,16 @@ function calculate() {
   if (last.investmentBreakdown && last.investmentBreakdown.length > 1) {
     var bHtml = '<div class="breakdown-header">Investment Breakdown</div>';
     bHtml += '<div class="breakdown-table">';
+    var anyDividends = last.investmentBreakdown.some(function (b) { return b.dividendsPaid > 0.01; });
     bHtml += '<div class="breakdown-row breakdown-row-header">' +
-      '<span>Investment</span><span>Balance</span></div>';
+      '<span>Investment</span><span>Balance</span>' +
+      (anyDividends ? '<span>Dividends Paid</span>' : '') + '</div>';
     for (var bi = 0; bi < last.investmentBreakdown.length; bi++) {
       var bInv = last.investmentBreakdown[bi];
       bHtml += '<div class="breakdown-row">' +
         '<span>' + escapeHtml(bInv.name) + '</span>' +
         '<span>' + formatUSD(bInv.balance) + '</span>' +
+        (anyDividends ? '<span>' + formatUSD(bInv.dividendsPaid) + '</span>' : '') +
         '</div>';
     }
     bHtml += '</div>';

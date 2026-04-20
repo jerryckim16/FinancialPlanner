@@ -1,6 +1,6 @@
 var DEFAULT_INVESTMENTS = [
-  { name: "US Stock Index", rate: 10, allocation: 80 },
-  { name: "Bond Index", rate: 4, allocation: 20 }
+  { name: "US Stock Index", rate: 10, dividend: 1.3, allocation: 80 },
+  { name: "Bond Index", rate: 4, dividend: 2.5, allocation: 20 }
 ];
 var investments = DEFAULT_INVESTMENTS.map(function (inv) { return Object.assign({}, inv); });
 var investmentIdCounter = 0;
@@ -32,6 +32,7 @@ function renderInvestments() {
   header.innerHTML =
     '<span>Name</span>' +
     '<span>Return (%)</span>' +
+    '<span>Dividend (%)</span>' +
     '<span>Allocation (%)</span>' +
     '<span></span>';
   container.appendChild(header);
@@ -43,6 +44,9 @@ function renderInvestments() {
       '<input type="text" data-idx="' + idx + '" data-field="name" value="' + escapeHtml(inv.name) + '" placeholder="Investment name" />' +
       '<div class="percent-suffix">' +
         '<input type="number" data-idx="' + idx + '" data-field="rate" value="' + inv.rate + '" min="-50" max="100" step="0.5" />' +
+      '</div>' +
+      '<div class="percent-suffix">' +
+        '<input type="number" data-idx="' + idx + '" data-field="dividend" value="' + (inv.dividend || 0) + '" min="0" max="100" step="0.1" />' +
       '</div>' +
       '<div class="percent-suffix">' +
         '<input type="number" data-idx="' + idx + '" data-field="allocation" value="' + inv.allocation + '" min="0" max="100" step="1" />' +
