@@ -13,7 +13,7 @@ document.getElementById("addCostBtn").addEventListener("click", function () {
 });
 
 document.getElementById("addInvestmentBtn").addEventListener("click", function () {
-  investments.push({ name: "Investment " + (++investmentIdCounter), rate: 7, dividend: 0, allocation: 0 });
+  investments.push({ name: "Investment " + (++investmentIdCounter), initialPosition: 0, contribution: 0, rate: 7, dividend: 0, expenseRatio: 0 });
   renderInvestments();
   calculate();
   scheduleSave();
@@ -27,8 +27,8 @@ renderCosts();
 renderLoans();
 renderInvestments();
 
-// Planner inputs
-document.querySelectorAll("#tab-planner input").forEach(function (el) {
+// Planner + Investments + global inputs
+document.querySelectorAll("#tab-planner input, #tab-investments input, .global-bar input").forEach(function (el) {
   if (el.closest("#costsList") || el.closest("#loansList") || el.closest("#investmentsList")) return;
   el.addEventListener("input", function () {
     calculate();
@@ -72,8 +72,11 @@ document.querySelectorAll(".tab-btn").forEach(function (btn) {
     document.querySelectorAll(".tab-content").forEach(function (t) { t.classList.remove("active"); });
     btn.classList.add("active");
     document.getElementById(btn.getAttribute("data-tab")).classList.add("active");
-    if (btn.getAttribute("data-tab") === "tab-opportunity") {
+    var targetTab = btn.getAttribute("data-tab");
+    if (targetTab === "tab-opportunity") {
       calculateOpportunity();
+    } else if (targetTab === "tab-investments") {
+      calculate();
     }
   });
 });

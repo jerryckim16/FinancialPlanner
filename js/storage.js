@@ -1,11 +1,11 @@
 var STORAGE_KEY = "financialPlanner.state.v1";
-var STORAGE_VERSION = 1;
+var STORAGE_VERSION = 2;
 
 var PLANNER_INPUT_IDS = [
   "annualIncome", "taxRate", "incomeGrowth",
   "savingsRate", "initialSavings",
   "realEstateValue", "realEstateAppreciation",
-  "principal", "years", "deficitAPR"
+  "years", "deficitAPR"
 ];
 
 var OC_INPUT_IDS = ["ocAmount", "ocName", "ocRate", "ocYears", "ocFrequency"];

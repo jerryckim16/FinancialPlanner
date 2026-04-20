@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css?v=29" />
+  <link rel="stylesheet" href="css/styles.css?v=30" />
 </head>
 <body>
   <header>
@@ -20,11 +20,16 @@
     </div>
     <div class="tab-bar">
       <button class="tab-btn active" data-tab="tab-planner">Financial Planner</button>
+      <button class="tab-btn" data-tab="tab-investments">Investments</button>
       <button class="tab-btn" data-tab="tab-opportunity">Opportunity Cost</button>
     </div>
   </header>
 
   <div class="container">
+  <div class="global-bar">
+    <label for="years">Investment Period (years)</label>
+    <input type="number" id="years" value="30" min="1" max="80" step="1" />
+  </div>
   <div id="tab-planner" class="tab-content active">
     <!-- Job Income -->
     <div class="card">
@@ -132,26 +137,6 @@
       <div class="note">Enter your current home equity (market value minus mortgage balance). Appreciation compounds annually on the equity value.</div>
     </div>
 
-    <!-- Investment Settings -->
-    <div class="card">
-      <div class="card-header">
-        <h2>Investment Settings</h2>
-        <button class="btn-primary" id="addInvestmentBtn">+ Add Investment</button>
-      </div>
-      <div class="field-group">
-        <div>
-          <label for="principal">Initial Investment ($)</label>
-          <input type="number" id="principal" value="10000" min="0" step="100" />
-        </div>
-        <div>
-          <label for="years">Investment Period (years)</label>
-          <input type="number" id="years" value="30" min="1" max="80" step="1" />
-        </div>
-      </div>
-      <div id="investmentsList"></div>
-      <div class="note">Allocation percentages control how your principal and monthly contributions are split across investments. They should sum to 100%. <strong>Return</strong> is annual capital appreciation that compounds in the investment. <strong>Dividend</strong> is a bonus annual yield paid to savings as cash (e.g. 2% adds 2% of the balance per year to savings), on top of capital appreciation — total return = Return + Dividend.</div>
-    </div>
-
     <!-- Summary -->
     <div class="card">
       <h2>Results</h2>
@@ -190,6 +175,56 @@
       <div class="bar-chart" id="barChart"></div>
     </div>
   </div><!-- /tab-planner -->
+
+  <div id="tab-investments" class="tab-content">
+    <!-- Investments -->
+    <div class="card">
+      <div class="card-header">
+        <h2>Investments</h2>
+        <button class="btn-primary" id="addInvestmentBtn">+ Add Investment</button>
+      </div>
+      <div id="investmentsList"></div>
+      <div class="note"><strong>Initial Position</strong> is how much you currently hold in each investment. <strong>Monthly Contribution %</strong> controls how your surplus (after costs, loans, and cash savings split) flows into each investment — percentages should sum to 100%. <strong>Return</strong> is annual capital appreciation. <strong>Dividend</strong> is a bonus annual yield paid to savings as cash (on top of Return — total return = Return + Dividend). <strong>Expense Ratio</strong> is subtracted from Return before compounding.</div>
+    </div>
+
+    <!-- Summary (mirrored) -->
+    <div class="card">
+      <h2>Results</h2>
+      <div class="results">
+        <div class="stat-card highlight">
+          <div class="stat-label">Net Worth</div>
+          <div class="stat-value" id="netWorthValue2">--</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Assets</div>
+          <div class="stat-value" id="totalAssets2">--</div>
+          <div class="stat-sub" id="assetsSub2"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Debt</div>
+          <div class="stat-value" id="totalDebtEnd2">--</div>
+          <div class="stat-sub" id="debtEndSub2"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Debt-Free In</div>
+          <div class="stat-value" id="debtFree2">--</div>
+          <div class="stat-sub" id="debtInterestPaid2"></div>
+        </div>
+      </div>
+      <div id="investmentBreakdown2"></div>
+    </div>
+
+    <!-- Year-by-year chart (mirrored) -->
+    <div class="card">
+      <h2>Growth Over Time</h2>
+      <div class="legend">
+        <span class="leg-assets">Assets</span>
+        <span class="leg-debt">Remaining Debt</span>
+        <span class="leg-networth">Net Worth</span>
+      </div>
+      <div class="bar-chart" id="barChart2"></div>
+    </div>
+  </div><!-- /tab-investments -->
 
   <div id="tab-opportunity" class="tab-content">
     <!-- Spending -->
@@ -274,13 +309,13 @@
 
   </div>
 
-  <script src="js/helpers.js?v=29"></script>
-  <script src="js/storage.js?v=29"></script>
-  <script src="js/costs.js?v=29"></script>
-  <script src="js/loans.js?v=29"></script>
-  <script src="js/investments.js?v=29"></script>
-  <script src="js/calculator.js?v=29"></script>
-  <script src="js/opportunity.js?v=29"></script>
-  <script src="js/app.js?v=29"></script>
+  <script src="js/helpers.js?v=30"></script>
+  <script src="js/storage.js?v=30"></script>
+  <script src="js/costs.js?v=30"></script>
+  <script src="js/loans.js?v=30"></script>
+  <script src="js/investments.js?v=30"></script>
+  <script src="js/calculator.js?v=30"></script>
+  <script src="js/opportunity.js?v=30"></script>
+  <script src="js/app.js?v=30"></script>
 </body>
 </html>

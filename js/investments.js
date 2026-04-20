@@ -1,17 +1,17 @@
 var DEFAULT_INVESTMENTS = [
-  { name: "US Stock Index", rate: 10, dividend: 1.3, allocation: 80 },
-  { name: "Bond Index", rate: 4, dividend: 2.5, allocation: 20 }
+  { name: "US Stock Index", initialPosition: 8000, contribution: 80, rate: 10, dividend: 1.3, expenseRatio: 0.03 },
+  { name: "Bond Index", initialPosition: 2000, contribution: 20, rate: 4, dividend: 2.5, expenseRatio: 0.05 }
 ];
 var investments = DEFAULT_INVESTMENTS.map(function (inv) { return Object.assign({}, inv); });
 var investmentIdCounter = 0;
 
-function getNormalizedAllocations() {
-  var total = investments.reduce(function (s, inv) { return s + (inv.allocation || 0); }, 0);
+function getNormalizedContributions() {
+  var total = investments.reduce(function (s, inv) { return s + (inv.contribution || 0); }, 0);
   if (total <= 0) {
     var eq = investments.length > 0 ? 1 / investments.length : 0;
     return investments.map(function () { return eq; });
   }
-  return investments.map(function (inv) { return (inv.allocation || 0) / total; });
+  return investments.map(function (inv) { return (inv.contribution || 0) / total; });
 }
 
 function renderInvestments() {
@@ -31,9 +31,11 @@ function renderInvestments() {
   header.className = "investment-row investment-header";
   header.innerHTML =
     '<span>Name</span>' +
+    '<span>Initial Position ($)</span>' +
+    '<span>Contribution (%)</span>' +
     '<span>Return (%)</span>' +
     '<span>Dividend (%)</span>' +
-    '<span>Allocation (%)</span>' +
+    '<span>Expense Ratio (%)</span>' +
     '<span></span>';
   container.appendChild(header);
 
@@ -42,6 +44,12 @@ function renderInvestments() {
     row.className = "investment-row";
     row.innerHTML =
       '<input type="text" data-idx="' + idx + '" data-field="name" value="' + escapeHtml(inv.name) + '" placeholder="Investment name" />' +
+      '<div class="dollar-prefix">' +
+        '<input type="number" data-idx="' + idx + '" data-field="initialPosition" value="' + (inv.initialPosition || 0) + '" min="0" step="100" />' +
+      '</div>' +
+      '<div class="percent-suffix">' +
+        '<input type="number" data-idx="' + idx + '" data-field="contribution" value="' + (inv.contribution || 0) + '" min="0" max="100" step="1" />' +
+      '</div>' +
       '<div class="percent-suffix">' +
         '<input type="number" data-idx="' + idx + '" data-field="rate" value="' + inv.rate + '" min="-50" max="100" step="0.5" />' +
       '</div>' +
@@ -49,7 +57,7 @@ function renderInvestments() {
         '<input type="number" data-idx="' + idx + '" data-field="dividend" value="' + (inv.dividend || 0) + '" min="0" max="100" step="0.1" />' +
       '</div>' +
       '<div class="percent-suffix">' +
-        '<input type="number" data-idx="' + idx + '" data-field="allocation" value="' + inv.allocation + '" min="0" max="100" step="1" />' +
+        '<input type="number" data-idx="' + idx + '" data-field="expenseRatio" value="' + (inv.expenseRatio || 0) + '" min="0" max="10" step="0.01" />' +
       '</div>' +
       '<button class="btn-ghost" data-remove="' + idx + '">Remove</button>';
     container.appendChild(row);
@@ -64,7 +72,7 @@ function renderInvestments() {
       } else {
         investments[idx][field] = parseFloat(e.target.value) || 0;
       }
-      if (field === "allocation") renderAllocationIndicator(container);
+      if (field === "contribution") renderAllocationIndicator(container);
       calculate();
       scheduleSave();
     });
@@ -87,7 +95,7 @@ function renderAllocationIndicator(container) {
   var existing = container.parentElement.querySelector(".allocation-indicator");
   if (existing) existing.remove();
 
-  var total = investments.reduce(function (s, inv) { return s + (inv.allocation || 0); }, 0);
+  var total = investments.reduce(function (s, inv) { return s + (inv.contribution || 0); }, 0);
   var indicator = document.createElement("div");
   indicator.className = "allocation-indicator";
 
@@ -96,11 +104,11 @@ function renderAllocationIndicator(container) {
     indicator.textContent = "No investments added";
   } else if (total === 100) {
     indicator.classList.add("valid");
-    indicator.textContent = "Allocation: 100%";
+    indicator.textContent = "Contribution: 100%";
   } else {
     indicator.classList.add("warning");
     var diff = 100 - total;
-    indicator.textContent = "Allocation: " + total + "%" +
+    indicator.textContent = "Contribution: " + total + "%" +
       (diff > 0 ? " \u2014 " + diff + "% unallocated" : " \u2014 " + Math.abs(diff) + "% over");
   }
 
