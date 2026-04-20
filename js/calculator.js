@@ -14,11 +14,7 @@ function calculate() {
   }, 0);
   document.getElementById("totalCosts").textContent = formatUSD(totalCosts);
 
-  // Loan summary (initial state)
-  var totalDebt = loans.reduce(function (s, l) { return s + (l.balance || 0); }, 0);
   var totalLoanPayments = loans.reduce(function (s, l) { return s + (l.payment || 0); }, 0);
-  document.getElementById("totalDebt").textContent = formatUSD(totalDebt);
-  document.getElementById("totalLoanPayments").textContent = formatUSD(totalLoanPayments);
 
   // Monthly savings (display only — uses initial loan payment total)
   var monthlySavings = monthlyTakeHome - totalCosts - totalLoanPayments;
