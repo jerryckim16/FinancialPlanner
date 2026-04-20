@@ -3,7 +3,7 @@ var STORAGE_VERSION = 1;
 
 var PLANNER_INPUT_IDS = [
   "annualIncome", "taxRate", "incomeGrowth",
-  "savingsRate",
+  "savingsRate", "initialSavings",
   "principal", "years", "deficitAPR"
 ];
 

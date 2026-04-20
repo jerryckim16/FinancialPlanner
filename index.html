@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css?v=26" />
+  <link rel="stylesheet" href="css/styles.css?v=27" />
 </head>
 <body>
   <header>
@@ -107,6 +107,12 @@
     <!-- Savings & Investment Split -->
     <div class="card">
       <h2>Savings &amp; Investment Split</h2>
+      <div class="field-group" style="max-width: 240px;">
+        <div>
+          <label for="initialSavings">Initial Cash Savings ($)</label>
+          <input type="number" id="initialSavings" value="0" min="0" step="100" />
+        </div>
+      </div>
       <div class="field-group">
         <div>
           <label for="savingsRate">
@@ -114,10 +120,6 @@
           </label>
           <input type="range" id="savingsRate" value="20" min="0" max="100" step="5" />
         </div>
-      </div>
-      <div class="inline-summary">
-        <span class="label-text">Savings Balance (End of Period)</span>
-        <span class="value-text" id="savingsBalance">--</span>
       </div>
       <div class="note">After costs and loan payments, the remaining take-home is split between a savings account (cash) and investments. Adjust the slider to control the split.</div>
     </div>
@@ -264,13 +266,13 @@
 
   </div>
 
-  <script src="js/helpers.js?v=26"></script>
-  <script src="js/storage.js?v=26"></script>
-  <script src="js/costs.js?v=26"></script>
-  <script src="js/loans.js?v=26"></script>
-  <script src="js/investments.js?v=26"></script>
-  <script src="js/calculator.js?v=26"></script>
-  <script src="js/opportunity.js?v=26"></script>
-  <script src="js/app.js?v=26"></script>
+  <script src="js/helpers.js?v=27"></script>
+  <script src="js/storage.js?v=27"></script>
+  <script src="js/costs.js?v=27"></script>
+  <script src="js/loans.js?v=27"></script>
+  <script src="js/investments.js?v=27"></script>
+  <script src="js/calculator.js?v=27"></script>
+  <script src="js/opportunity.js?v=27"></script>
+  <script src="js/app.js?v=27"></script>
 </body>
 </html>

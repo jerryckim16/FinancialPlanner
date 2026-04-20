@@ -83,7 +83,7 @@ function calculate() {
   var totalInterestPaidOnDebt = 0;
   var debtFreeMonth = null;
   var hadDebt = loanState.some(function (l) { return l.balance > 0; });
-  var savings = 0;
+  var savings = num("initialSavings");
   var deficitDebt = 0;
   var deficitEverOccurred = false;
   var DEFICIT_APR = num("deficitAPR") / 100;
@@ -271,9 +271,6 @@ function calculate() {
       ? "Your costs exceeded income — " + formatUSD(finalDeficitDebt) + " of revolving debt accrued by end of period."
       : "Your costs exceeded income in some months. Reserves were drawn down to cover the gap.";
   }
-
-  // Savings display
-  document.getElementById("savingsBalance").textContent = formatUSD(savings);
 
   // Per-investment breakdown table
   var breakdownContainer = document.getElementById("investmentBreakdown");
