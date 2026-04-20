@@ -80,6 +80,8 @@ function calculate() {
   var debtFreeMonth = null;
   var hadDebt = loanState.some(function (l) { return l.balance > 0; });
   var savings = num("initialSavings");
+  var realEstate = num("realEstateValue");
+  var realEstateMonthlyRate = Math.pow(1 + num("realEstateAppreciation") / 100, 1 / 12) - 1;
   var deficitDebt = 0;
   var deficitEverOccurred = false;
   var DEFICIT_APR = num("deficitAPR") / 100;
@@ -190,6 +192,9 @@ function calculate() {
       debtFreeMonth = m;
     }
 
+    // Appreciate real estate equity
+    if (realEstate > 0) realEstate *= (1 + realEstateMonthlyRate);
+
     // Grow take-home and inflate costs for the next month
     currentTakeHome *= incomeMonthlyFactor;
     for (var ci2 = 0; ci2 < costState.length; ci2++) {
@@ -206,6 +211,7 @@ function calculate() {
         debtRemaining: totalDebtRemaining,
         monthlyCosts: thisMonthCosts,
         savings: savings,
+        realEstate: realEstate,
         deficitDebt: deficitDebt,
         investmentBreakdown: investments.map(function (inv, idx) {
           return {
@@ -221,7 +227,7 @@ function calculate() {
   }
 
   var last = data[data.length - 1];
-  var finalAssets = last.balance + last.savings;
+  var finalAssets = last.balance + last.savings + last.realEstate;
   var finalNetWorth = finalAssets - last.debtRemaining;
 
   document.getElementById("netWorthValue").textContent = formatUSD(finalNetWorth);
@@ -229,6 +235,7 @@ function calculate() {
   var assetParts = [];
   if (last.balance > 0.01) assetParts.push(formatUSD(last.balance) + " invested");
   if (last.savings > 0.01) assetParts.push(formatUSD(last.savings) + " savings");
+  if (last.realEstate > 0.01) assetParts.push(formatUSD(last.realEstate) + " real estate");
   document.getElementById("assetsSub").textContent = assetParts.join(" + ");
 
   document.getElementById("totalDebtEnd").textContent =
@@ -296,7 +303,7 @@ function calculate() {
   var maxAssets = 0;
   var maxDebt = 0;
   for (var j = 0; j < data.length; j++) {
-    var assets = data[j].balance + data[j].savings;
+    var assets = data[j].balance + data[j].savings + data[j].realEstate;
     if (assets > maxAssets) maxAssets = assets;
     if (data[j].debtRemaining > maxDebt) maxDebt = data[j].debtRemaining;
   }
@@ -390,7 +397,7 @@ function calculate() {
     var x = cx - barW / 2;
 
     // Assets bar (investments + savings, upward from zero)
-    var totalAssets = d.balance + d.savings;
+    var totalAssets = d.balance + d.savings + d.realEstate;
     if (totalAssets > 0.01) {
       var assetsTop = yPos(totalAssets);
       ctx.fillStyle = "#0071e3";
@@ -407,7 +414,7 @@ function calculate() {
     }
 
     // Net worth point
-    var nw = d.balance + d.savings - d.debtRemaining;
+    var nw = d.balance + d.savings + d.realEstate - d.debtRemaining;
     netWorthPoints.push({ x: cx, y: yPos(nw), value: nw, year: d.year, dataIdx: i });
   }
 
@@ -475,7 +482,7 @@ function calculate() {
         activePoint = closest;
         var fd = filteredData[closest.dataIdx];
         var ttBreakdown = '';
-        var hasAny = fd.balance > 0.01 || fd.savings > 0.01 || fd.debtRemaining > 0.01;
+        var hasAny = fd.balance > 0.01 || fd.savings > 0.01 || fd.realEstate > 0.01 || fd.debtRemaining > 0.01;
         if (hasAny) {
           ttBreakdown = '<div class="tt-breakdown">';
           if (fd.balance > 0.01) {
@@ -488,6 +495,7 @@ function calculate() {
             }
           }
           if (fd.savings > 0.01) ttBreakdown += '<div class="tt-inv">Savings: ' + formatUSD(fd.savings) + '</div>';
+          if (fd.realEstate > 0.01) ttBreakdown += '<div class="tt-inv">Real Estate: ' + formatUSD(fd.realEstate) + '</div>';
           if (fd.debtRemaining > 0.01) ttBreakdown += '<div class="tt-inv">Debt: -' + formatUSD(fd.debtRemaining) + '</div>';
           ttBreakdown += '</div>';
         }

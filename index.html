@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css?v=28" />
+  <link rel="stylesheet" href="css/styles.css?v=29" />
 </head>
 <body>
   <header>
@@ -114,6 +114,22 @@
         </div>
       </div>
       <div class="note">After costs and loan payments, the remaining take-home is split between a savings account (cash) and investments. Adjust the slider to control the split.</div>
+    </div>
+
+    <!-- Real Estate -->
+    <div class="card">
+      <h2>Real Estate Equity</h2>
+      <div class="field-group">
+        <div>
+          <label for="realEstateValue">Current Equity ($)</label>
+          <input type="number" id="realEstateValue" value="0" min="0" step="1000" />
+        </div>
+        <div>
+          <label for="realEstateAppreciation">Annual Appreciation (%)</label>
+          <input type="number" id="realEstateAppreciation" value="3" min="-20" max="30" step="0.5" />
+        </div>
+      </div>
+      <div class="note">Enter your current home equity (market value minus mortgage balance). Appreciation compounds annually on the equity value.</div>
     </div>
 
     <!-- Investment Settings -->
@@ -258,13 +274,13 @@
 
   </div>
 
-  <script src="js/helpers.js?v=28"></script>
-  <script src="js/storage.js?v=28"></script>
-  <script src="js/costs.js?v=28"></script>
-  <script src="js/loans.js?v=28"></script>
-  <script src="js/investments.js?v=28"></script>
-  <script src="js/calculator.js?v=28"></script>
-  <script src="js/opportunity.js?v=28"></script>
-  <script src="js/app.js?v=28"></script>
+  <script src="js/helpers.js?v=29"></script>
+  <script src="js/storage.js?v=29"></script>
+  <script src="js/costs.js?v=29"></script>
+  <script src="js/loans.js?v=29"></script>
+  <script src="js/investments.js?v=29"></script>
+  <script src="js/calculator.js?v=29"></script>
+  <script src="js/opportunity.js?v=29"></script>
+  <script src="js/app.js?v=29"></script>
 </body>
 </html>
