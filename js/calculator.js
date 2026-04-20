@@ -160,7 +160,8 @@ function calculate() {
     }
 
     // Grow each investment independently (applies regardless of surplus/deficit).
-    // Rate = capital appreciation. Dividend = additional cash yield paid from balance to savings.
+    // Rate = capital appreciation. Dividend = bonus cash yield paid to savings,
+    // without reducing the investment balance (total return = rate + dividend).
     var monthlyDividends = 0;
     if (invCount > 0) {
       for (var k = 0; k < invCount; k++) {
@@ -170,7 +171,6 @@ function calculate() {
         var divPayout = invBalances[k] * monthlyDividendRates[k];
         if (divPayout > 0) {
           monthlyDividends += divPayout;
-          invBalances[k] -= divPayout;
           invDividendsPaid[k] += divPayout;
         }
       }
