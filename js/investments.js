@@ -31,11 +31,11 @@ function renderInvestments() {
   header.className = "investment-row investment-header";
   header.innerHTML =
     '<span>Name</span>' +
-    '<span>Initial Position ($)</span>' +
-    '<span>Contribution (%)</span>' +
-    '<span>Return (%)</span>' +
-    '<span>Dividend (%)</span>' +
-    '<span>Expense Ratio (%)</span>' +
+    '<span>Position</span>' +
+    '<span>Contrib.</span>' +
+    '<span>Return</span>' +
+    '<span>Dividend</span>' +
+    '<span>Exp. Ratio</span>' +
     '<span></span>';
   container.appendChild(header);
 
