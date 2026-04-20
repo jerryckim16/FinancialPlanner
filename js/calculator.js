@@ -49,10 +49,7 @@ function calculate() {
     return (inv.rate || 0) / 100 / 12;
   });
   var monthlyDividendRates = investments.map(function (inv) {
-    // Dividend is treated as the portion of total return paid as cash.
-    // Cap at rate so capital can't go negative from the dividend split.
-    var divAnnual = Math.max(0, Math.min(inv.dividend || 0, inv.rate || 0));
-    return divAnnual / 100 / 12;
+    return (inv.dividend || 0) / 100 / 12;
   });
 
   // Clone loan state for simulation
@@ -163,18 +160,17 @@ function calculate() {
     }
 
     // Grow each investment independently (applies regardless of surplus/deficit).
-    // Dividend is paid from this month's return, not as extra capital extraction:
-    //   capital appreciation = rate - dividend, cash payout = dividend * balance.
+    // Rate = capital appreciation. Dividend = additional cash yield paid from balance to savings.
     var monthlyDividends = 0;
     if (invCount > 0) {
       for (var k = 0; k < invCount; k++) {
         var thisContrib = investContrib * allocations[k];
-        var divPayout = invBalances[k] * monthlyDividendRates[k];
-        var appreciationRate = monthlyRates[k] - monthlyDividendRates[k];
-        invBalances[k] = invBalances[k] * (1 + appreciationRate) + thisContrib;
+        invBalances[k] = invBalances[k] * (1 + monthlyRates[k]) + thisContrib;
         invContributions[k] += thisContrib;
+        var divPayout = invBalances[k] * monthlyDividendRates[k];
         if (divPayout > 0) {
           monthlyDividends += divPayout;
+          invBalances[k] -= divPayout;
           invDividendsPaid[k] += divPayout;
         }
       }
