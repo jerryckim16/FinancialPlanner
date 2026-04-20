@@ -36,8 +36,10 @@ document.querySelectorAll("#tab-planner input").forEach(function (el) {
   });
 });
 
-document.getElementById("investmentAllocation").addEventListener("input", function () {
-  document.getElementById("allocationLabel").textContent = this.value + "%";
+document.getElementById("savingsRate").addEventListener("input", function () {
+  var s = parseInt(this.value) || 0;
+  document.getElementById("savingsLabel").textContent = s + "%";
+  document.getElementById("investLabel").textContent = (100 - s) + "%";
 });
 
 // Opportunity cost inputs

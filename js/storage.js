@@ -3,7 +3,7 @@ var STORAGE_VERSION = 1;
 
 var PLANNER_INPUT_IDS = [
   "annualIncome", "taxRate", "incomeGrowth",
-  "emergencyMonths", "investmentAllocation",
+  "savingsRate",
   "principal", "years", "deficitAPR"
 ];
 
@@ -71,9 +71,12 @@ function loadState() {
       if (el) el.value = p[id];
     }
   }
-  if (p.investmentAllocation !== undefined) {
-    var label = document.getElementById("allocationLabel");
-    if (label) label.textContent = p.investmentAllocation + "%";
+  if (p.savingsRate !== undefined) {
+    var s = parseInt(p.savingsRate) || 0;
+    var sl = document.getElementById("savingsLabel");
+    var il = document.getElementById("investLabel");
+    if (sl) sl.textContent = s + "%";
+    if (il) il.textContent = (100 - s) + "%";
   }
 
   if (Array.isArray(p.costs)) {
@@ -135,9 +138,14 @@ function resetState() {
   for (var pi = 0; pi < PLANNER_INPUT_IDS.length; pi++) resetInputToDefault(PLANNER_INPUT_IDS[pi]);
   for (var oi = 0; oi < OC_INPUT_IDS.length; oi++) resetInputToDefault(OC_INPUT_IDS[oi]);
 
-  var allocLabel = document.getElementById("allocationLabel");
-  var allocInput = document.getElementById("investmentAllocation");
-  if (allocLabel && allocInput) allocLabel.textContent = allocInput.value + "%";
+  var savingsInput = document.getElementById("savingsRate");
+  if (savingsInput) {
+    var sv = parseInt(savingsInput.value) || 0;
+    var sl = document.getElementById("savingsLabel");
+    var il = document.getElementById("investLabel");
+    if (sl) sl.textContent = sv + "%";
+    if (il) il.textContent = (100 - sv) + "%";
+  }
 
   document.querySelectorAll("#ocSpendingType .seg-btn").forEach(function (btn) {
     if (btn.getAttribute("data-type") === "onetime") btn.classList.add("active");

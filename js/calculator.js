@@ -34,11 +34,9 @@ function calculate() {
     warning.style.display = "block";
   }
 
-  // Emergency fund inputs
-  var emergencyMonths = num("emergencyMonths");
-  var investmentAllocationPct = num("investmentAllocation") / 100;
-  var emergencyTarget = totalCosts * emergencyMonths;
-  document.getElementById("emergencyTarget").textContent = formatUSD(emergencyTarget);
+  // Savings / investment split
+  var savingsRatePct = num("savingsRate") / 100;
+  var investmentPct = 1 - savingsRatePct;
 
   // Investment simulation — monthly, with loans paying down over time
   var principal = num("principal");
@@ -80,8 +78,7 @@ function calculate() {
   var totalInterestPaidOnDebt = 0;
   var debtFreeMonth = null;
   var hadDebt = loanState.some(function (l) { return l.balance > 0; });
-  var emergencyFund = 0;
-  var emergencyFundedMonth = null;
+  var savings = 0;
   var deficitDebt = 0;
   var deficitEverOccurred = false;
   var DEFICIT_APR = num("deficitAPR") / 100;
@@ -112,7 +109,6 @@ function calculate() {
     // Cash flow this month
     var netCashflow = currentTakeHome - thisMonthCosts - loanPaidThisMonth;
     var investContrib = 0;
-    var emergencyContrib = 0;
 
     if (netCashflow >= 0) {
       // SURPLUS: pay down any accrued deficit debt first, then save/invest
@@ -123,30 +119,17 @@ function calculate() {
         surplus -= payoff;
       }
 
-      // Split remaining between investment and emergency fund
-      if (emergencyFund >= emergencyTarget || emergencyTarget <= 0) {
-        investContrib = surplus;
-      } else {
-        investContrib = surplus * investmentAllocationPct;
-        emergencyContrib = surplus * (1 - investmentAllocationPct);
-        var fundGap = emergencyTarget - emergencyFund;
-        if (emergencyContrib > fundGap) {
-          investContrib += (emergencyContrib - fundGap);
-          emergencyContrib = fundGap;
-        }
-        emergencyFund += emergencyContrib;
-        if (emergencyFund >= emergencyTarget && emergencyFundedMonth === null) {
-          emergencyFundedMonth = m;
-        }
-      }
+      // Split remaining between savings and investments
+      savings += surplus * savingsRatePct;
+      investContrib = surplus * investmentPct;
     } else {
-      // DEFICIT: draw from emergency fund → investments → new debt
+      // DEFICIT: draw from savings → investments → new debt
       deficitEverOccurred = true;
       var deficit = -netCashflow;
 
-      var fromEmergency = Math.min(emergencyFund, deficit);
-      emergencyFund -= fromEmergency;
-      deficit -= fromEmergency;
+      var fromSavings = Math.min(savings, deficit);
+      savings -= fromSavings;
+      deficit -= fromSavings;
 
       if (deficit > 0) {
         if (invCount > 0) {
@@ -212,7 +195,7 @@ function calculate() {
         interest: investment - totalContributions,
         debtRemaining: totalDebtRemaining,
         monthlyCosts: thisMonthCosts,
-        emergencyFund: emergencyFund,
+        savings: savings,
         deficitDebt: deficitDebt,
         investmentBreakdown: investments.map(function (inv, idx) {
           return {
@@ -227,14 +210,14 @@ function calculate() {
   }
 
   var last = data[data.length - 1];
-  var finalAssets = last.balance + last.emergencyFund;
+  var finalAssets = last.balance + last.savings;
   var finalNetWorth = finalAssets - last.debtRemaining;
 
   document.getElementById("netWorthValue").textContent = formatUSD(finalNetWorth);
   document.getElementById("totalAssets").textContent = formatUSD(finalAssets);
   var assetParts = [];
   if (last.balance > 0.01) assetParts.push(formatUSD(last.balance) + " invested");
-  if (last.emergencyFund > 0.01) assetParts.push(formatUSD(last.emergencyFund) + " emergency");
+  if (last.savings > 0.01) assetParts.push(formatUSD(last.savings) + " savings");
   document.getElementById("assetsSub").textContent = assetParts.join(" + ");
 
   document.getElementById("totalDebtEnd").textContent =
@@ -274,15 +257,8 @@ function calculate() {
       : "Your costs exceeded income in some months. Reserves were drawn down to cover the gap.";
   }
 
-  // Emergency fund display
-  document.getElementById("emergencyBalance").textContent = formatUSD(emergencyFund);
-  if (emergencyTarget <= 0) {
-    document.getElementById("emergencyFundedMonth").textContent = "No target set";
-  } else if (emergencyFundedMonth !== null) {
-    document.getElementById("emergencyFundedMonth").textContent = formatMonths(emergencyFundedMonth);
-  } else {
-    document.getElementById("emergencyFundedMonth").textContent = "Not within " + years + "y";
-  }
+  // Savings display
+  document.getElementById("savingsBalance").textContent = formatUSD(savings);
 
   // Per-investment breakdown table
   var breakdownContainer = document.getElementById("investmentBreakdown");
@@ -309,7 +285,7 @@ function calculate() {
   var maxAssets = 0;
   var maxDebt = 0;
   for (var j = 0; j < data.length; j++) {
-    var assets = data[j].balance + data[j].emergencyFund;
+    var assets = data[j].balance + data[j].savings;
     if (assets > maxAssets) maxAssets = assets;
     if (data[j].debtRemaining > maxDebt) maxDebt = data[j].debtRemaining;
   }
@@ -402,8 +378,8 @@ function calculate() {
     var cx = padL + (i + 0.5) * colSpacing;
     var x = cx - barW / 2;
 
-    // Assets bar (investments + emergency fund, upward from zero)
-    var totalAssets = d.balance + d.emergencyFund;
+    // Assets bar (investments + savings, upward from zero)
+    var totalAssets = d.balance + d.savings;
     if (totalAssets > 0.01) {
       var assetsTop = yPos(totalAssets);
       ctx.fillStyle = "#0071e3";
@@ -420,7 +396,7 @@ function calculate() {
     }
 
     // Net worth point
-    var nw = d.balance + d.emergencyFund - d.debtRemaining;
+    var nw = d.balance + d.savings - d.debtRemaining;
     netWorthPoints.push({ x: cx, y: yPos(nw), value: nw, year: d.year, dataIdx: i });
   }
 
@@ -488,7 +464,7 @@ function calculate() {
         activePoint = closest;
         var fd = filteredData[closest.dataIdx];
         var ttBreakdown = '';
-        var hasAny = fd.balance > 0.01 || fd.emergencyFund > 0.01 || fd.debtRemaining > 0.01;
+        var hasAny = fd.balance > 0.01 || fd.savings > 0.01 || fd.debtRemaining > 0.01;
         if (hasAny) {
           ttBreakdown = '<div class="tt-breakdown">';
           if (fd.balance > 0.01) {
@@ -500,7 +476,7 @@ function calculate() {
               }
             }
           }
-          if (fd.emergencyFund > 0.01) ttBreakdown += '<div class="tt-inv">Emergency Fund: ' + formatUSD(fd.emergencyFund) + '</div>';
+          if (fd.savings > 0.01) ttBreakdown += '<div class="tt-inv">Savings: ' + formatUSD(fd.savings) + '</div>';
           if (fd.debtRemaining > 0.01) ttBreakdown += '<div class="tt-inv">Debt: -' + formatUSD(fd.debtRemaining) + '</div>';
           ttBreakdown += '</div>';
         }
