@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css?v=31" />
+  <link rel="stylesheet" href="css/styles.css?v=32" />
 </head>
 <body>
   <header>
@@ -26,10 +26,6 @@
   </header>
 
   <div class="container">
-  <div class="global-bar">
-    <label for="years">Investment Period (years)</label>
-    <input type="number" id="years" value="30" min="1" max="80" step="1" />
-  </div>
   <div id="tab-planner" class="tab-content active">
     <!-- Job Income -->
     <div class="card">
@@ -181,7 +177,13 @@
     <div class="card">
       <div class="card-header">
         <h2>Investments</h2>
-        <button class="btn-primary" id="addInvestmentBtn">+ Add Investment</button>
+        <div class="card-header-right">
+          <div class="inline-field">
+            <label for="years">Period (years)</label>
+            <input type="number" id="years" value="30" min="1" max="80" step="1" />
+          </div>
+          <button class="btn-primary" id="addInvestmentBtn">+ Add Investment</button>
+        </div>
       </div>
       <div id="investmentsList"></div>
       <div class="note"><strong>Initial Position</strong> is how much you currently hold in each investment. <strong>Monthly Contribution %</strong> controls how your surplus (after costs, loans, and cash savings split) flows into each investment — percentages should sum to 100%. <strong>Return</strong> is annual capital appreciation. <strong>Dividend</strong> is a bonus annual yield paid to savings as cash (on top of Return — total return = Return + Dividend). <strong>Expense Ratio</strong> is subtracted from Return before compounding.</div>
@@ -309,13 +311,13 @@
 
   </div>
 
-  <script src="js/helpers.js?v=31"></script>
-  <script src="js/storage.js?v=31"></script>
-  <script src="js/costs.js?v=31"></script>
-  <script src="js/loans.js?v=31"></script>
-  <script src="js/investments.js?v=31"></script>
-  <script src="js/calculator.js?v=31"></script>
-  <script src="js/opportunity.js?v=31"></script>
-  <script src="js/app.js?v=31"></script>
+  <script src="js/helpers.js?v=32"></script>
+  <script src="js/storage.js?v=32"></script>
+  <script src="js/costs.js?v=32"></script>
+  <script src="js/loans.js?v=32"></script>
+  <script src="js/investments.js?v=32"></script>
+  <script src="js/calculator.js?v=32"></script>
+  <script src="js/opportunity.js?v=32"></script>
+  <script src="js/app.js?v=32"></script>
 </body>
 </html>

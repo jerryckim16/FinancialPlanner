@@ -27,8 +27,8 @@ renderCosts();
 renderLoans();
 renderInvestments();
 
-// Planner + Investments + global inputs
-document.querySelectorAll("#tab-planner input, #tab-investments input, .global-bar input").forEach(function (el) {
+// Planner + Investments inputs
+document.querySelectorAll("#tab-planner input, #tab-investments input").forEach(function (el) {
   if (el.closest("#costsList") || el.closest("#loansList") || el.closest("#investmentsList")) return;
   el.addEventListener("input", function () {
     calculate();

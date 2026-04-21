@@ -93,27 +93,27 @@ header h1 {
   display: block;
 }
 
-/* --- Global Bar (shared controls across tabs) --- */
+/* --- Card Header Right (inline controls next to heading) --- */
 
-.global-bar {
+.card-header-right {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 16px;
-  background: #fff;
-  border: 1px solid #f0f0f0;
-  border-radius: 12px;
-  margin-bottom: 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
-.global-bar label {
+.inline-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.inline-field label {
   margin-bottom: 0;
   white-space: nowrap;
 }
 
-.global-bar input {
-  max-width: 120px;
+.inline-field input {
+  width: 80px;
 }
 
 /* --- Segmented Control --- */
