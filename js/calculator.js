@@ -301,6 +301,22 @@ function calculate() {
     if (el) el.innerHTML = breakdownHtml;
   });
 
+  // Allocation donut chart
+  var allocationData = [];
+  for (var ai = 0; ai < last.investmentBreakdown.length; ai++) {
+    allocationData.push({
+      name: last.investmentBreakdown[ai].name,
+      value: last.investmentBreakdown[ai].balance
+    });
+  }
+  if (last.savings > 0.01) {
+    allocationData.push({ name: "Cash Savings", value: last.savings });
+  }
+  if (last.realEstate > 0.01) {
+    allocationData.push({ name: "Real Estate", value: last.realEstate });
+  }
+  renderAllocationDonut("allocationDonut", allocationData);
+
   // Vertical bar chart with canvas
   // Scan data for actual ranges (not just last point or initial state)
   var maxAssets = 0;

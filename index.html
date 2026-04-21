@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css?v=35" />
+  <link rel="stylesheet" href="css/styles.css?v=36" />
 </head>
 <body>
   <header>
@@ -195,6 +195,12 @@
       <div class="note"><strong>Initial Position</strong> is how much you currently hold in each investment. <strong>Monthly Contribution %</strong> controls how your surplus (after costs, loans, and cash savings split) flows into each investment — percentages should sum to 100%. <strong>Return</strong> is annual capital appreciation. <strong>Dividend</strong> is a bonus annual yield paid to savings as cash (on top of Return — total return = Return + Dividend). <strong>Expense Ratio</strong> is subtracted from Return before compounding.</div>
     </div>
 
+    <!-- Allocation Donut -->
+    <div class="card">
+      <h2>Asset Allocation</h2>
+      <div class="donut-container" id="allocationDonut"></div>
+    </div>
+
     <!-- Dashboard (mirrored) -->
     <div class="dashboard">
       <div class="hero-card">
@@ -325,13 +331,14 @@
 
   </div>
 
-  <script src="js/helpers.js?v=35"></script>
-  <script src="js/storage.js?v=35"></script>
-  <script src="js/costs.js?v=35"></script>
-  <script src="js/loans.js?v=35"></script>
-  <script src="js/investments.js?v=35"></script>
-  <script src="js/calculator.js?v=35"></script>
-  <script src="js/opportunity.js?v=35"></script>
-  <script src="js/app.js?v=35"></script>
+  <script src="js/helpers.js?v=36"></script>
+  <script src="js/storage.js?v=36"></script>
+  <script src="js/costs.js?v=36"></script>
+  <script src="js/loans.js?v=36"></script>
+  <script src="js/investments.js?v=36"></script>
+  <script src="js/donut.js?v=36"></script>
+  <script src="js/calculator.js?v=36"></script>
+  <script src="js/opportunity.js?v=36"></script>
+  <script src="js/app.js?v=36"></script>
 </body>
 </html>
