@@ -250,7 +250,7 @@ function calculate() {
   setText("totalDebtEnd", last.debtRemaining > 0.01 ? formatUSD(last.debtRemaining) : "$0");
   setText("debtEndSub", totalInterestPaidOnDebt > 0.01 ? formatUSD(totalInterestPaidOnDebt) + " total interest paid" : "");
 
-  document.getElementById("futureCosts").textContent = formatUSD(last.monthlyCosts);
+  setText("futureCosts", formatUSD(last.monthlyCosts));
 
   // Debt-free display
   var finalDeficitDebt = last.deficitDebt || 0;

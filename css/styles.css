@@ -722,30 +722,23 @@ button {
 .inline-summary.positive .value-text { color: var(--accent); }
 .inline-summary.negative .value-text { color: var(--danger); }
 
-/* --- Results / Stat Cards --- */
+/* --- Dashboard Layout --- */
 
-.results {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+.dashboard {
+  margin-top: 4px;
 }
 
-.stat-card {
-  background: var(--bg-2);
+/* Hero Card */
+.hero-card {
+  background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  padding: 14px;
-}
-
-.stat-card.highlight {
-  background: var(--surface);
-  border-color: var(--line-2);
   overflow: hidden;
   position: relative;
+  margin-bottom: 12px;
 }
 
-.stat-card.highlight::before {
-  content: '';
+.hero-glow {
   position: absolute;
   inset: 0;
   border-radius: var(--radius);
@@ -755,35 +748,106 @@ button {
   pointer-events: none;
 }
 
-.stat-label {
-  font-size: 10px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--fg-4);
-  margin-bottom: 4px;
-  font-family: var(--font-num);
-}
-
-.stat-value {
-  font-size: 22px;
-  font-weight: 500;
-  font-family: var(--font-num);
-  letter-spacing: -0.02em;
+.hero-top {
   position: relative;
+  padding: 18px 20px 0 20px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
 }
 
-.stat-card.highlight .stat-value {
+.hero-metric {
+  flex: 1;
+}
+
+.hero-value {
+  font-size: 38px;
+  font-weight: 500;
+  font-family: var(--font-num);
+  letter-spacing: -0.03em;
+  margin-top: 4px;
   background: linear-gradient(180deg, var(--fg), oklch(85% 0.05 300));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
+.hero-legend {
+  display: flex;
+  gap: 14px;
+  font-size: 11px;
+  color: var(--fg-3);
+  padding-top: 6px;
+  flex-shrink: 0;
+}
+
+.hero-legend span::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+
+.hero-legend .leg-assets::before { background: var(--accent-2); }
+.hero-legend .leg-debt::before { background: var(--danger); }
+.hero-legend .leg-networth::before {
+  background: transparent;
+  width: 14px;
+  height: 2px;
+  border-top: 2px dashed var(--accent);
+  border-radius: 0;
+  vertical-align: middle;
+}
+
+.hero-chart {
+  position: relative;
+  padding: 4px 8px 8px 0;
+}
+
+/* KPI Tiles */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.kpi-tile {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.kpi-value {
+  font-size: 18px;
+  font-weight: 500;
+  font-family: var(--font-num);
+  letter-spacing: -0.02em;
+  color: var(--fg);
+  margin-top: 2px;
+}
+
+.stat-label {
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--fg-4);
+  font-family: var(--font-num);
+}
+
 .stat-sub {
   font-size: 10px;
   color: var(--fg-3);
-  margin-top: 4px;
+  margin-top: 2px;
   font-family: var(--font-num);
 }
 
@@ -928,7 +992,9 @@ button {
 
 @media (max-width: 500px) {
   .field-group, .field-group.three { grid-template-columns: 1fr; }
-  .results { grid-template-columns: 1fr; }
+  .kpi-row { grid-template-columns: 1fr 1fr; }
+  .hero-top { flex-direction: column; }
+  .hero-value { font-size: 28px; }
   .loan-row { grid-template-columns: 1fr 1fr; }
   .cost-row { grid-template-columns: 1fr 1fr; }
   .cost-row.cost-header { display: none; }

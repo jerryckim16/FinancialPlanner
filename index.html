@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css?v=34" />
+  <link rel="stylesheet" href="css/styles.css?v=35" />
 </head>
 <body>
   <header>
@@ -88,10 +88,6 @@
         <span class="label-text">Monthly Savings Today (Take-Home &minus; Costs &minus; Loan Payments)</span>
         <span class="value-text" id="monthlySavings">--</span>
       </div>
-      <div class="inline-summary">
-        <span class="label-text">Projected Monthly Costs at End of Period</span>
-        <span class="value-text" id="futureCosts">--</span>
-      </div>
       <div class="warning-banner" id="savingsWarning" style="display:none;">
         Your monthly obligations exceed your take-home income. Reduce expenses, restructure loans, or increase income.
       </div>
@@ -133,42 +129,52 @@
       <div class="note">Enter your current home equity (market value minus mortgage balance). Appreciation compounds annually on the equity value.</div>
     </div>
 
-    <!-- Summary -->
-    <div class="card">
-      <h2>Results</h2>
-      <div class="results">
-        <div class="stat-card highlight">
-          <div class="stat-label">Net Worth</div>
-          <div class="stat-value" id="netWorthValue">--</div>
+    <!-- Dashboard -->
+    <div class="dashboard">
+      <!-- Hero Card: Net Worth + Chart -->
+      <div class="hero-card">
+        <div class="hero-glow"></div>
+        <div class="hero-top">
+          <div class="hero-metric">
+            <div class="stat-label">Net Worth</div>
+            <div class="hero-value" id="netWorthValue">--</div>
+          </div>
+          <div class="hero-legend">
+            <span class="leg-assets">Assets</span>
+            <span class="leg-debt">Remaining Debt</span>
+            <span class="leg-networth">Net Worth</span>
+          </div>
         </div>
-        <div class="stat-card">
+        <div class="hero-chart">
+          <div class="bar-chart" id="barChart"></div>
+        </div>
+      </div>
+
+      <!-- KPI Tiles -->
+      <div class="kpi-row">
+        <div class="kpi-tile">
           <div class="stat-label">Total Assets</div>
-          <div class="stat-value" id="totalAssets">--</div>
+          <div class="kpi-value" id="totalAssets">--</div>
           <div class="stat-sub" id="assetsSub"></div>
         </div>
-        <div class="stat-card">
+        <div class="kpi-tile">
           <div class="stat-label">Total Debt</div>
-          <div class="stat-value" id="totalDebtEnd">--</div>
+          <div class="kpi-value" id="totalDebtEnd">--</div>
           <div class="stat-sub" id="debtEndSub"></div>
         </div>
-        <div class="stat-card">
+        <div class="kpi-tile">
           <div class="stat-label">Debt-Free In</div>
-          <div class="stat-value" id="debtFree">--</div>
+          <div class="kpi-value" id="debtFree">--</div>
           <div class="stat-sub" id="debtInterestPaid"></div>
         </div>
+        <div class="kpi-tile">
+          <div class="stat-label">Projected Costs</div>
+          <div class="kpi-value" id="futureCosts">--</div>
+          <div class="stat-sub">monthly at end of period</div>
+        </div>
       </div>
-      <div id="investmentBreakdown"></div>
-    </div>
 
-    <!-- Year-by-year chart -->
-    <div class="card">
-      <h2>Growth Over Time</h2>
-      <div class="legend">
-        <span class="leg-assets">Assets</span>
-        <span class="leg-debt">Remaining Debt</span>
-        <span class="leg-networth">Net Worth</span>
-      </div>
-      <div class="bar-chart" id="barChart"></div>
+      <div id="investmentBreakdown"></div>
     </div>
   </div><!-- /tab-planner -->
 
@@ -189,42 +195,50 @@
       <div class="note"><strong>Initial Position</strong> is how much you currently hold in each investment. <strong>Monthly Contribution %</strong> controls how your surplus (after costs, loans, and cash savings split) flows into each investment — percentages should sum to 100%. <strong>Return</strong> is annual capital appreciation. <strong>Dividend</strong> is a bonus annual yield paid to savings as cash (on top of Return — total return = Return + Dividend). <strong>Expense Ratio</strong> is subtracted from Return before compounding.</div>
     </div>
 
-    <!-- Summary (mirrored) -->
-    <div class="card">
-      <h2>Results</h2>
-      <div class="results">
-        <div class="stat-card highlight">
-          <div class="stat-label">Net Worth</div>
-          <div class="stat-value" id="netWorthValue2">--</div>
+    <!-- Dashboard (mirrored) -->
+    <div class="dashboard">
+      <div class="hero-card">
+        <div class="hero-glow"></div>
+        <div class="hero-top">
+          <div class="hero-metric">
+            <div class="stat-label">Net Worth</div>
+            <div class="hero-value" id="netWorthValue2">--</div>
+          </div>
+          <div class="hero-legend">
+            <span class="leg-assets">Assets</span>
+            <span class="leg-debt">Remaining Debt</span>
+            <span class="leg-networth">Net Worth</span>
+          </div>
         </div>
-        <div class="stat-card">
+        <div class="hero-chart">
+          <div class="bar-chart" id="barChart2"></div>
+        </div>
+      </div>
+
+      <div class="kpi-row">
+        <div class="kpi-tile">
           <div class="stat-label">Total Assets</div>
-          <div class="stat-value" id="totalAssets2">--</div>
+          <div class="kpi-value" id="totalAssets2">--</div>
           <div class="stat-sub" id="assetsSub2"></div>
         </div>
-        <div class="stat-card">
+        <div class="kpi-tile">
           <div class="stat-label">Total Debt</div>
-          <div class="stat-value" id="totalDebtEnd2">--</div>
+          <div class="kpi-value" id="totalDebtEnd2">--</div>
           <div class="stat-sub" id="debtEndSub2"></div>
         </div>
-        <div class="stat-card">
+        <div class="kpi-tile">
           <div class="stat-label">Debt-Free In</div>
-          <div class="stat-value" id="debtFree2">--</div>
+          <div class="kpi-value" id="debtFree2">--</div>
           <div class="stat-sub" id="debtInterestPaid2"></div>
         </div>
+        <div class="kpi-tile">
+          <div class="stat-label">Projected Costs</div>
+          <div class="kpi-value" id="futureCosts2">--</div>
+          <div class="stat-sub">monthly at end of period</div>
+        </div>
       </div>
-      <div id="investmentBreakdown2"></div>
-    </div>
 
-    <!-- Year-by-year chart (mirrored) -->
-    <div class="card">
-      <h2>Growth Over Time</h2>
-      <div class="legend">
-        <span class="leg-assets">Assets</span>
-        <span class="leg-debt">Remaining Debt</span>
-        <span class="leg-networth">Net Worth</span>
-      </div>
-      <div class="bar-chart" id="barChart2"></div>
+      <div id="investmentBreakdown2"></div>
     </div>
   </div><!-- /tab-investments -->
 
@@ -311,13 +325,13 @@
 
   </div>
 
-  <script src="js/helpers.js?v=34"></script>
-  <script src="js/storage.js?v=34"></script>
-  <script src="js/costs.js?v=34"></script>
-  <script src="js/loans.js?v=34"></script>
-  <script src="js/investments.js?v=34"></script>
-  <script src="js/calculator.js?v=34"></script>
-  <script src="js/opportunity.js?v=34"></script>
-  <script src="js/app.js?v=34"></script>
+  <script src="js/helpers.js?v=35"></script>
+  <script src="js/storage.js?v=35"></script>
+  <script src="js/costs.js?v=35"></script>
+  <script src="js/loans.js?v=35"></script>
+  <script src="js/investments.js?v=35"></script>
+  <script src="js/calculator.js?v=35"></script>
+  <script src="js/opportunity.js?v=35"></script>
+  <script src="js/app.js?v=35"></script>
 </body>
 </html>
