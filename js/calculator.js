@@ -377,24 +377,24 @@ function calculate() {
     for (var t = yMin; t <= yMax; t += tickStep) {
       var ty = yPos(t);
       if (t === 0) continue;
-      ctx.strokeStyle = t < 0 ? "#fbeaea" : "#eef0f3";
+      ctx.strokeStyle = t < 0 ? "rgba(180, 60, 60, 0.15)" : "rgba(255, 255, 255, 0.06)";
       ctx.lineWidth = 0.5;
       ctx.beginPath();
       ctx.moveTo(padL, ty);
       ctx.lineTo(chartW - padR, ty);
       ctx.stroke();
-      ctx.fillStyle = t < 0 ? "#c0868b" : "#86868b";
+      ctx.fillStyle = t < 0 ? "rgba(220, 100, 100, 0.7)" : "rgba(255, 255, 255, 0.35)";
       ctx.fillText(formatCompactUSD(t), padL - 8, ty + 3);
     }
 
     // Zero line
-    ctx.strokeStyle = "#aaa";
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.15)";
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(padL, zeroY);
     ctx.lineTo(chartW - padR, zeroY);
     ctx.stroke();
-    ctx.fillStyle = "#86868b";
+    ctx.fillStyle = "rgba(255, 255, 255, 0.35)";
     ctx.font = "10px 'JetBrains Mono', monospace";
     ctx.textAlign = "right";
     ctx.fillText("$0", padL - 8, zeroY + 3);
@@ -410,7 +410,7 @@ function calculate() {
       var totalAssets = d.balance + d.savings + d.realEstate;
       if (totalAssets > 0.01) {
         var assetsTop = yPos(totalAssets);
-        ctx.fillStyle = "#0071e3";
+        ctx.fillStyle = "oklch(70% 0.22 300)";
         roundedRect(ctx, x, assetsTop, barW, zeroY - assetsTop, 3, "both");
         ctx.fill();
       }
@@ -418,7 +418,7 @@ function calculate() {
       // Debt bar (downward from zero)
       if (d.debtRemaining > 0.01) {
         var debtBot = yPos(-d.debtRemaining);
-        ctx.fillStyle = "#ff3b30";
+        ctx.fillStyle = "oklch(68% 0.22 25)";
         roundedRect(ctx, x, zeroY, barW, debtBot - zeroY, 3, "both");
         ctx.fill();
       }
@@ -429,7 +429,7 @@ function calculate() {
     }
 
     // X-axis labels
-    ctx.fillStyle = "#86868b";
+    ctx.fillStyle = "rgba(255, 255, 255, 0.35)";
     ctx.font = "10px 'JetBrains Mono', monospace";
     ctx.textAlign = "center";
     for (var i = 0; i < n; i++) {
@@ -440,7 +440,7 @@ function calculate() {
 
     // Net worth line
     if (netWorthPoints.length > 1) {
-      ctx.strokeStyle = "rgba(30, 30, 30, 0.8)";
+      ctx.strokeStyle = "oklch(74% 0.18 155 / 0.8)";
       ctx.lineWidth = 2;
       ctx.setLineDash([5, 3]);
       ctx.beginPath();
@@ -452,7 +452,7 @@ function calculate() {
       ctx.stroke();
       ctx.setLineDash([]);
 
-      ctx.fillStyle = "#1d1d1f";
+      ctx.fillStyle = "oklch(74% 0.18 155)";
       for (var i = 0; i < netWorthPoints.length; i++) {
         var p = netWorthPoints[i];
         ctx.beginPath();

@@ -114,19 +114,19 @@ function calculateOpportunity() {
   ctx.textAlign = "right";
   for (var t = 0; t <= yMax; t += tickStep) {
     var ty = yPos(t);
-    ctx.strokeStyle = "#eef0f3";
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.06)";
     ctx.lineWidth = 0.5;
     ctx.beginPath();
     ctx.moveTo(padL, ty);
     ctx.lineTo(chartW - padR, ty);
     ctx.stroke();
-    ctx.fillStyle = "#86868b";
+    ctx.fillStyle = "rgba(255, 255, 255, 0.35)";
     ctx.fillText(formatCompactUSD(t), padL - 8, ty + 3);
   }
 
   // X-axis labels
   ctx.textAlign = "center";
-  ctx.fillStyle = "#86868b";
+  ctx.fillStyle = "rgba(255, 255, 255, 0.35)";
   var labelStep = 1;
   if (years > 30) labelStep = 10;
   else if (years > 15) labelStep = 5;
@@ -138,8 +138,8 @@ function calculateOpportunity() {
     ctx.fillText(years + "y", xPos(years), chartH - padB + 16);
   }
 
-  // Spent line (gray)
-  ctx.strokeStyle = "#86868b";
+  // Spent line (dim)
+  ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
   ctx.lineWidth = 2;
   ctx.beginPath();
   for (var i = 0; i < data.length; i++) {
@@ -151,7 +151,7 @@ function calculateOpportunity() {
   ctx.stroke();
 
   // Fill area between lines
-  ctx.fillStyle = "rgba(0, 113, 227, 0.08)";
+  ctx.fillStyle = "oklch(70% 0.22 300 / 0.1)";
   ctx.beginPath();
   for (var i = 0; i < data.length; i++) {
     var px = xPos(data[i].year);
@@ -165,7 +165,7 @@ function calculateOpportunity() {
   ctx.fill();
 
   // Invested line (blue)
-  ctx.strokeStyle = "#0071e3";
+  ctx.strokeStyle = "oklch(70% 0.22 300)";
   ctx.lineWidth = 2.5;
   ctx.beginPath();
   for (var i = 0; i < data.length; i++) {
@@ -182,7 +182,7 @@ function calculateOpportunity() {
     var d = data[i];
     var px = xPos(d.year);
     var py = yPos(d.invested);
-    ctx.fillStyle = "#0071e3";
+    ctx.fillStyle = "oklch(70% 0.22 300)";
     ctx.beginPath();
     ctx.arc(px, py, 3, 0, Math.PI * 2);
     ctx.fill();
