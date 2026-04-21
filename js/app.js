@@ -26,6 +26,7 @@ loadState();
 renderCosts();
 renderLoans();
 renderInvestments();
+if (typeof loadBankAccounts === "function") loadBankAccounts();
 
 // Planner + Investments inputs
 document.querySelectorAll("#tab-planner input, #tab-investments input").forEach(function (el) {
@@ -77,6 +78,8 @@ document.querySelectorAll(".tab-btn").forEach(function (btn) {
       calculateOpportunity();
     } else if (targetTab === "tab-investments") {
       calculate();
+    } else if (targetTab === "tab-bank") {
+      if (typeof loadBankAccounts === "function") loadBankAccounts();
     }
   });
 });
